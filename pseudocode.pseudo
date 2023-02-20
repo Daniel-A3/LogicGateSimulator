@@ -1,7 +1,133 @@
 // Pseudocode for OneOrZero, a logic gate simulator
 
 class LogicGate {
-    constructor(self) {
-        
+    constructor(self, gateType) {
+        self.gateType = gateType
+        self.output = 0
     }
+
+    function getOutput(self) {
+        self.output = self.performLogic()
+        return self.output
+    }
+}
+
+class BinaryGate {
+    constructor(self, gateType) {
+        super().constructor(gateType)
+        self.inputA = 0
+        self.inputB = 0
+    }
+
+    function getInputA(self) {
+        self.inputA = socketState(socketA)
+        return self.inputA
+    }
+
+    function getInputB(self) {
+        self.inputB = socketState(socketB)
+        return self.inputB
+    }
+}
+
+class UnaryGate {
+    constructor(self, gateType) {
+        super().constructor(gateType)
+        self.inputA = 0
+    }
+
+    function getInput(self) {
+        self.inputA = socketState(socketA)
+    }
+}
+
+class ANDGate(BinaryGate) {
+    constructor(self, gateType) {
+        super().constructor(gateType)
+    }
+
+    function performLogic(self) {
+        if (self.getInputA() == 1) and (self.getInputB() == 1) {
+            self.output = 1
+        } else {
+            self.output = 0
+        }
+        return self.output
+    } 
+}
+
+class ORGate(BinaryGate) {
+    constructor(self, gateType) {
+        super().constructor(gateType)
+    }
+
+    function performLogic(self) {
+        if (self.getInputA() == 1) or (self.getInputB() == 1) {
+            self.output = 1
+        } else {
+            self.output = 0
+        }
+        return self.output
+    } 
+}
+
+class NOTGate(UnaryGate) {
+    constructor(self, gateType) {
+        super().constructor(gateType)
+    }
+
+    function performLogic(self) {
+        if (self.getInputA() == 0) {
+            self.output = 1
+        } else {
+            self.output = 0
+        }
+        return self.output
+    } 
+}
+
+class NORGate(BinaryGate) {
+    constructor(self, gateType) {
+        super().constructor(gateType)
+    }
+
+    function performLogic(self) {
+        if (self.getInputA() == 0) and (self.getInputB() == 0) {
+            self.output = 1
+        } else {
+            self.output = 0
+        }
+        return self.output
+    } 
+}
+
+class NANDGate(BinaryGate) {
+    constructor(self, gateType) {
+        super().constructor(gateType)
+    }
+
+    function performLogic(self) {
+        if (self.getInputA() == 1) and (self.getInputB() == 1) {
+            self.output = 0
+        } else {
+            self.output = 1
+        }
+        return self.output
+    } 
+}
+
+class XORGate(BinaryGate) {
+    constructor(self, gateType) {
+        super().constructor(gateType)
+    }
+
+    function performLogic(self) {
+        if ((self.getInputA() == 1) and (self.getInputA() == 0)) or 
+        ((self.getInputA() == 0) and (self.getInputA() == 1)) {
+            self.output = 1
+        } else {
+            self.output = 0
+        }
+        return self.output
+    } 
 }
