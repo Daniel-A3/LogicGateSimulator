@@ -1,0 +1,7 @@
+// Pseudocode for OneOrZero, a logic gate simulator
+
+class LogicGate {
+    constructor(self) {
+        
+    }
+}
