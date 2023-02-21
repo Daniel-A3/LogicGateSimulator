@@ -1,4 +1,8 @@
 // Pseudocode for OneOrZero, a logic gate simulator
+import pygame
+/* LOGIC GATES
+-----------------------------------------------------------------
+*/
 
 class LogicGate {
     constructor(self, gateType) {
@@ -131,3 +135,7 @@ class XORGate(BinaryGate) {
         return self.output
     } 
 }
+
+/* SIDEBAR MENU
+-----------------------------------------------------------------
+*/
