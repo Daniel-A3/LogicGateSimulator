@@ -1,5 +1,6 @@
 // Pseudocode for OneOrZero, a logic gate simulator
 import pygame
+
 /* LOGIC GATES
 -----------------------------------------------------------------
 */
@@ -14,9 +15,13 @@ class LogicGate {
         self.output = self.performLogic()
         return self.output
     }
+
+    function drawGate(param) {
+        
+    }
 }
 
-class BinaryGate {
+class BinaryGate(LogicGate) {
     constructor(self, gateType) {
         super().constructor(gateType)
         self.inputA = 0
@@ -34,7 +39,7 @@ class BinaryGate {
     }
 }
 
-class UnaryGate {
+class UnaryGate(LogicGate) {
     constructor(self, gateType) {
         super().constructor(gateType)
         self.inputA = 0
@@ -139,3 +144,10 @@ class XORGate(BinaryGate) {
 /* SIDEBAR MENU
 -----------------------------------------------------------------
 */
+
+/* MAIN
+-----------------------------------------------------------------
+*/
+function main() {
+    
+}
