@@ -145,9 +145,16 @@ class XORGate(BinaryGate) {
 -----------------------------------------------------------------
 */
 
-/* MAIN
+/* GAME CLASS
 -----------------------------------------------------------------
 */
-function main() {
-    
-}
+class Game():
+    constructor() {
+        pygame.init()
+
+    }
+
+// Creates buttons for all logic gates
+ANDGate = Button(pygame.image.load("andgate.png"))
+ANDGate.rect.x = 50
+ANDGate.rect.y = 20
