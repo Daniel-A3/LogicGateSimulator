@@ -17,10 +17,6 @@ XOR_GATE = pygame.image.load("XOR_GATE.png")
 
 SWITCH = pygame.image.load("SWITCH.png")
 
-function drawWindow() {
-    WIN.fill(WHITE)
-    pygame.display.update()
-}
 
 /* LOGIC GATES
 -----------------------------------------------------------------
@@ -180,10 +176,14 @@ class SidebarMenu():
 
     componentsList = [andInstance, orInstance, notInstace,
     nandInstance, norInstance, xorInstance, switchInstance]
+    // Y-value of each component
+    coordinatesDictionary = {"andInstance" : 0, "orInstance" : 60,
+     "notInstance" : 120, "nandInstance": 180, "norInstance" : 240, 
+     "nandInstance" : 300, "xorInstance" : 360, "switchInstance" : 420}
     // Displays the gates in the sidebar menu, in a 1x6 grid
     function showGates(self) {
-        for item in gatesList:
-            coordinates = (0,0)
+        for item in componentsList:
+            coordinates = coordinatesDictionary[str(item)]
             WIN.blit(item, coordinates)
             // Makes sure that the next compenent is shown below the previous
             coordinates[1] = coordinates[1] + 60
@@ -203,7 +203,19 @@ class Game():
         pygame.init()
     }
 
+function main() {
+    WIN.fill(WHITE)
+    pygame.display.update()
+
+    function dragAndDrop() {
+        
+    }
+    
+}
+
 // Creates buttons for all logic gates
 ANDGate = Button(pygame.image.load("andgate.png"))
 ANDGate.rect.x = 50
 ANDGate.rect.y = 20
+
+main()
