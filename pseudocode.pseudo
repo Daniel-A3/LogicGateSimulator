@@ -28,13 +28,13 @@ class BinaryGate(LogicGate) {
         self.inputB = 0
     }
 
-    function getInputA(self) {
-        self.inputA = socketState(socketA)
+    function getInputA(self, Socket) {
+        self.inputA = socket.getState("A")
         return self.inputA
     }
 
-    function getInputB(self) {
-        self.inputB = socketState(socketB)
+    function getInputB(self, Socket) {
+        self.inputB = socket.getState("B")
         return self.inputB
     }
 }
