@@ -1,6 +1,18 @@
 // Pseudocode for OneOrZero, a logic gate simulator
 import pygame
 
+WIDTH, HEIGHT = 1280, 720
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("OneOrZero")
+WHITE = (255, 255, 255)
+
+FPS = 60
+
+function drawWindow() {
+    WIN.fill(WHITE)
+    pygame.display.update()
+}
+
 /* LOGIC GATES
 -----------------------------------------------------------------
 */
