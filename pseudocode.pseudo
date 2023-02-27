@@ -8,6 +8,15 @@ WHITE = (255, 255, 255)
 
 FPS = 60
 
+AND_GATE = pygame.image.load("AND_GATE.png")
+OR_GATE = pygame.image.load("OR_GATE.png")
+NOT_GATE = pyame.image.load("NOT_GATE.png")
+NAND_GATE = pygame.image.load("NAND_GATE.png")
+NOR_GATE = pygame.image.load("NOR_GATE.png")
+XOR_GATE = pygame.image.load("XOR_GATE.png")
+
+SWITCH = pygame.image.load("SWITCH.png")
+
 function drawWindow() {
     WIN.fill(WHITE)
     pygame.display.update()
@@ -157,13 +166,41 @@ class XORGate(BinaryGate) {
 -----------------------------------------------------------------
 */
 
+class SidebarMenu():
+    constructor() {
+        andInstance = new ANDGate(AND_GATE)
+        orInstance = new ORGate(OR_GATE)
+        notInstance = new NOTGate(NOT_GATE)
+        nandInstance = new NANDGate(NAND_GATE)
+        norInstance = new NORGate(NOR_GATE)
+        xorInstance = new XORGate(XOR_GATE)
+
+        switchInstance = new Switch(SWITCH)
+    }
+
+    componentsList = [andInstance, orInstance, notInstace,
+    nandInstance, norInstance, xorInstance, switchInstance]
+    // Displays the gates in the sidebar menu, in a 1x6 grid
+    function showGates(self) {
+        for item in gatesList:
+            coordinates = (0,0)
+            WIN.blit(item, coordinates)
+            // Makes sure that the next compenent is shown below the previous
+            coordinates[1] = coordinates[1] + 60
+        pygame.display.update()
+    }
+    // This function makes sure that another copy of the gate appears
+    // when a gate is drag-and-dropped from the sidebar menu.
+    function infiniteGates(param) {
+        
+    }
+
 /* GAME CLASS
 -----------------------------------------------------------------
 */
 class Game():
     constructor() {
         pygame.init()
-
     }
 
 // Creates buttons for all logic gates
