@@ -163,7 +163,11 @@ class XORGate(BinaryGate) {
 */
 
 class SidebarMenu():
-    constructor() {
+    constructor(self,screen, width, height) {
+        self.screen = screen
+        self.width = width
+        self.height = height
+
         andInstance = new ANDGate(AND_GATE)
         orInstance = new ORGate(OR_GATE)
         notInstance = new NOTGate(NOT_GATE)
@@ -181,18 +185,18 @@ class SidebarMenu():
      "notInstance" : 120, "nandInstance": 180, "norInstance" : 240, 
      "nandInstance" : 300, "xorInstance" : 360, "switchInstance" : 420}
     // Displays the gates in the sidebar menu, in a 1x6 grid
-    function showGates(self) {
+    function drawGates(self) {
+        pygame.draw.rect(self.screen, (192, 192, 192), pygame.Rect(0, 0, self.width, self.height))
         for item in componentsList:
             coordinates = coordinatesDictionary[str(item)]
             WIN.blit(item, coordinates)
-            // Makes sure that the next compenent is shown below the previous
-            coordinates[1] = coordinates[1] + 60
-        pygame.display.update()
     }
-    // This function makes sure that another copy of the gate appears
-    // when a gate is drag-and-dropped from the sidebar menu.
-    function infiniteGates(param) {
-        
+    // This function checks that a logic gate is clicked.
+    function buttonClicked(self) {
+        for button in componentsList:
+            if coordinatesDictionary[button].collidepoint(pos):
+                return button["gateType"]
+        return None
     }
 
 /* GAME CLASS
@@ -212,10 +216,5 @@ function main() {
     }
     
 }
-
-// Creates buttons for all logic gates
-ANDGate = Button(pygame.image.load("andgate.png"))
-ANDGate.rect.x = 50
-ANDGate.rect.y = 20
 
 main()
