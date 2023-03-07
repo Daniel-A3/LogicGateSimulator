@@ -185,7 +185,7 @@ class SidebarMenu():
      "notInstance" : 120, "nandInstance": 180, "norInstance" : 240, 
      "nandInstance" : 300, "xorInstance" : 360, "switchInstance" : 420}
     // Displays the gates in the sidebar menu, in a 1x6 grid
-    function drawGates(self) {
+    procedure drawGates(self) {
         pygame.draw.rect(self.screen, (192, 192, 192), pygame.Rect(0, 0, self.width, self.height))
         for item in componentsList:
             coordinates = coordinatesDictionary[str(item)]
@@ -195,9 +195,37 @@ class SidebarMenu():
     function buttonClicked(self) {
         for button in componentsList:
             if coordinatesDictionary[button].collidepoint(pos):
-                return button["gateType"]
+                return True
         return None
     }
+
+/* SOCKET CLASS
+-----------------------------------------------------------------
+*/
+class Socket {
+    constructor(self,screen, x, y, input = False) {
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.radius = 10
+        self.color = (255, 255, 255)
+        self.input = input
+        self.clicked = False
+    }
+
+    procedure draw(self) {
+        pygame.draw.circle(self.screen, self.color, (self.x, self.y), self.radius)
+        if self.input == True:
+            pygame.draw.circle(self.screen, (0, 0, 0), (self.x, self.y), self.radius-2)
+    }
+
+    procedure handleEvent(self, event) {
+        if event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.getPos()
+            if (pos[0] - self.x)**2 + (pos[1] - self.y)**2 <= self.radius**2:
+                self.clicked = True
+    }
+}
 
 /* GAME CLASS
 -----------------------------------------------------------------
@@ -207,13 +235,41 @@ class Game():
         pygame.init()
     }
 
-function main() {
-    WIN.fill(WHITE)
-    pygame.display.update()
+running = True
 
-    function dragAndDrop() {
-        
-    }
+function dragAndDrop() {
+    if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.button == 1:
+            if SidebarMenu.buttonClicked(self) == True:
+                dragging = True
+                mouseX = event.pos
+                mouseY = event.pos
+                offsetX = self.x - mouseX
+                offsetY = self.y - mouseY
+                return offsetX, offsetY
+
+    else if event.type == pygame.MOUSEMOTION:
+        if dragging == True:
+            mouseX = event.pos
+            mouseY = event.pos
+            offsetX = self.x + mouseX
+            offsetY = self.y + mouseY
+            return offsetX, offsetY
+    else:
+        return None
+}
+
+function main() {
+    while running == True:
+        for event in pygame.event.get():
+            // Checks if the program was quit
+            if event.type == pygame.QUIT:
+                running = False
+
+            dragAndDrop()
+
+        WIN.fill(WHITE)
+        pygame.display.update()
     
 }
 
