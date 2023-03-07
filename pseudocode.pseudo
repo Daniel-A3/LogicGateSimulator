@@ -218,7 +218,7 @@ class Socket {
         if self.input == True:
             pygame.draw.circle(self.screen, (0, 0, 0), (self.x, self.y), self.radius-2)
     }
-
+    // Checks collision
     procedure handleEvent(self, event) {
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.getPos()
@@ -226,6 +226,23 @@ class Socket {
                 self.clicked = True
     }
 }
+/* WIRE CLASS
+-----------------------------------------------------------------
+*/
+class Wire:
+    constructor(self, screen, socket1, socket2):
+        self.screen = screen
+        self.socket1 = socket1
+        self.socket2 = socket2
+        self.color = (255, 255, 255)
+        self.width = 2
+
+    function draw(self){
+        pygame.draw.line(self.screen, self.color, (self.socket1.x, self.socket1.y), (self.socket2.x, self.socket2.y), self.width)
+    }
+    function update(self){
+        self.draw()
+    }
 
 /* GAME CLASS
 -----------------------------------------------------------------
