@@ -1,5 +1,7 @@
 // Pseudocode for OneOrZero, a logic gate simulator
 import pygame
+import sqlite3
+import json
 
 WIDTH, HEIGHT = 1280, 720
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -297,6 +299,102 @@ class Bin():
             if self.rect.colliderect(component.rect):
                 components.remove(component)
     }
+
+/* INFORMATION MENU CLASS
+-----------------------------------------------------------------
+*/
+
+class InformationMenu():
+    function constructor(self, screen, x, y, size=40, color=(255, 255, 255)){
+        self.screen = screen
+        self.image = pygame.image.load(image_path)
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.info_screen = pygame.Surface((400, 300))
+        self.info_screen.fill((255, 255, 255))
+        self.info_screen_rect = self.info_screen.get_rect(center=self.screen.get_rect().center)
+        self.info_font = pygame.font.SysFont('Arial', 18)
+    }
+    function draw(self){
+        self.screen.blit(self.image, self.rect)
+    }
+    function handleEvent(self, event, gates){
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if self.rect.collidepoint(event.pos):
+                self.show_info(gates)
+    }
+    function showMenu(self, gates){
+        self.info_screen.fill((255, 255, 255))
+        info = ""
+        for gate in gates:
+            info = info + (gate.name + gate.info)
+        info_text = self.info_font.render(info, True, (0, 0, 0))
+        self.info_screen.blit(info_text, (10, 10))
+        pygame.draw.rect(self.info_screen, (0, 0, 0), self.info_screen.get_rect(), 2)
+        self.screen.blit(self.info_screen, self.info_screen_rect)
+    }
+
+/* SAVE AND LOAD CIRCUITS - DATABASE CLASS
+-----------------------------------------------------------------
+*/
+// Dictionary template for the circuit configuration
+circuit_config = {
+    "components": [
+        {
+            "type": "",
+            "position": [],
+            "inputs": [
+                {"socketId": 1, "connectedTo": },
+                {"socketId": 2, "connectedTo": }
+            ],
+            "outputs": [{"socketId": 3, "connectedTo": None}]
+        },
+    ],
+    "wires": [
+        {"start_socket": 1, "end_socket": 2},
+    ]
+}  
+
+class Database():
+    function constructor(self, DBname){
+        self.DBname = DBname
+        self.connection = sqlite3.connect(DBname)
+        self.cursor = self.connection.cursor()
+        self.create_table()
+    }
+
+    function createTable(self){
+        self.cursor.execute("CREATE TABLE IF NOT EXISTS circuits
+                            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            name TEXT NOT NULL,
+                            config TEXT NOT NULL);")
+        self.connection.commit()
+    }
+
+    function saveCircuit(self, name, circuitConfig){
+        // Convert circuit configuration to JSON
+        jsonData = json.dumps(circuitConfig)
+        
+        // Save JSON data to database
+        self.cursor.execute("INSERT INTO circuits (name, config) VALUES (?, ?)",
+                             (name, jsonData))
+        self.connection.commit()
+    }
+
+    def load_circuit(self, name):
+        # Load JSON data from database
+        self.cursor.execute("SELECT config FROM circuits WHERE name=?", (name,))
+        row = self.cursor.fetchone()
+        if row:
+            json_data = row[0]
+            
+            # Parse JSON data into Python dictionary
+            circuit_config = json.loads(json_data)
+            
+            return circuit_config
+        else:
+            return None
 
 /* GAME CLASS
 -----------------------------------------------------------------
