@@ -158,6 +158,33 @@ class XORGate(BinaryGate) {
     } 
 }
 
+/* SWITCH CLASS
+-----------------------------------------------------------------
+*/
+
+class Switch {
+    constructor(param) {
+        def __init__(self, screen, x, y, size=40, color=(255, 255, 255)):
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.size = size
+        self.color = color
+        self.value = False
+        self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
+    }
+        function draw(self){
+            pygame.draw.rect(self.screen, self.color, self.rect)
+            if self.value:
+                pygame.draw.circle(self.screen, (0, 255, 0), self.rect.center, self.size//3)
+        }
+        function update(self, event){
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.rect.collidepoint(event.pos):
+                    self.value = not self.value
+        }
+}
+
 /* SIDEBAR MENU
 -----------------------------------------------------------------
 */
