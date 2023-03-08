@@ -161,7 +161,7 @@ class XORGate(BinaryGate) {
 /* SWITCH CLASS
 -----------------------------------------------------------------
 */
-
+// Switch component that allows you to turn current on or off
 class Switch {
     constructor(param) {
         def __init__(self, screen, x, y, size=40, color=(255, 255, 255)):
@@ -176,7 +176,7 @@ class Switch {
         function draw(self){
             pygame.draw.rect(self.screen, self.color, self.rect)
             if self.value:
-                pygame.draw.circle(self.screen, (0, 255, 0), self.rect.center, self.size//3)
+                pygame.draw.circle(self.screen, (0, 255, 0), self.rect.center, self.size)
         }
         function update(self, event){
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -222,6 +222,8 @@ class SidebarMenu():
     function buttonClicked(self) {
         for button in componentsList:
             if coordinatesDictionary[button].collidepoint(pos):
+                // If a component is dragged, a new one spawns in its place.
+                drawGates(self)
                 return True
         return None
     }
@@ -229,6 +231,7 @@ class SidebarMenu():
 /* SOCKET CLASS
 -----------------------------------------------------------------
 */
+
 class Socket {
     constructor(self,screen, x, y, input = False) {
         self.screen = screen
@@ -253,9 +256,11 @@ class Socket {
                 self.clicked = True
     }
 }
+
 /* WIRE CLASS
 -----------------------------------------------------------------
 */
+
 class Wire:
     constructor(self, screen, socket1, socket2):
         self.screen = screen
@@ -271,9 +276,32 @@ class Wire:
         self.draw()
     }
 
+/* BIN CLASS
+-----------------------------------------------------------------
+*/
+// If a component is drag and dropped onto the bin, it is deleted.  
+class Bin():
+    function constructor(self, screen, x, y, size=40, color=(255, 255, 255)){
+        self.screen = screen
+        self.x = x
+        self.y = y
+        self.size = size
+        self.image = pygame.image.load('bin.png').convert_alpha()
+        self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
+    }
+    function draw(self){
+        self.screen.blit(pygame.transform.scale(self.image, (self.size, self.size)), self.rect)
+    }
+    function update(self, components){
+        for component in components:
+            if self.rect.colliderect(component.rect):
+                components.remove(component)
+    }
+
 /* GAME CLASS
 -----------------------------------------------------------------
 */
+
 class Game():
     constructor() {
         pygame.init()
