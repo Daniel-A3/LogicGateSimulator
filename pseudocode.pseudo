@@ -396,15 +396,6 @@ class Database():
         else:
             return None
     }
-    
-/* GAME CLASS
------------------------------------------------------------------
-*/
-
-class Game():
-    constructor() {
-        pygame.init()
-    }
 
 running = True
 
