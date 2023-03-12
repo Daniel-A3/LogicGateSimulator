@@ -382,20 +382,21 @@ class Database():
         self.connection.commit()
     }
 
-    function load_circuit(self, name){
+    function loadCircuit(self, name){
         // Load JSON data from database
         self.cursor.execute("SELECT config FROM circuits WHERE name=?", (name,))
         row = self.cursor.fetchone()
         if row:
-            json_data = row[0]
+            jsonData = row[0]
             
-            # Parse JSON data into Python dictionary
-            circuit_config = json.loads(json_data)
+            // Parse JSON data into Python dictionary
+            circuitConfig = json.loads(jsonData)
             
-            return circuit_config
+            return circuitConfig
         else:
             return None
     }
+    
 /* GAME CLASS
 -----------------------------------------------------------------
 */
