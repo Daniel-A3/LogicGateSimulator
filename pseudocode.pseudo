@@ -190,7 +190,6 @@ class Switch {
 /* SIDEBAR MENU
 -----------------------------------------------------------------
 */
-
 class SidebarMenu {
     constructor(self,screen, width, height) {
         self.screen = screen
