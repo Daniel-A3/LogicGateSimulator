@@ -35,8 +35,8 @@ class LogicGate {
         return self.output
     }
 
-    function drawGate(param) {
-        
+    function drawGate(self, surface) {
+        surface.blit(self.image, (self.x, self.y))
     }
 }
 
@@ -175,15 +175,15 @@ class Switch {
         self.value = False
         self.rect = pygame.Rect(self.x, self.y, self.size, self.size)
     }
-        function draw(self){
-            pygame.draw.rect(self.screen, self.color, self.rect)
-            if self.value:
-                pygame.draw.circle(self.screen, (0, 255, 0), self.rect.center, self.size)
-        }
-        function update(self, event){
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if self.rect.collidepoint(event.pos):
-                    self.value = not self.value
+    function draw(self){
+        pygame.draw.rect(self.screen, self.color, self.rect)
+        if self.value:
+            pygame.draw.circle(self.screen, (0, 255, 0), self.rect.center, self.size)
+    }
+    function update(self, event){
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.value = not self.value
         }
 }
 
@@ -191,7 +191,7 @@ class Switch {
 -----------------------------------------------------------------
 */
 
-class SidebarMenu():
+class SidebarMenu {
     constructor(self,screen, width, height) {
         self.screen = screen
         self.width = width
@@ -214,7 +214,7 @@ class SidebarMenu():
      "notInstance" : 120, "nandInstance": 180, "norInstance" : 240, 
      "nandInstance" : 300, "xorInstance" : 360, "switchInstance" : 420}
     // Displays the gates in the sidebar menu, in a 1x6 grid
-    procedure drawGates(self) {
+    procedure draw(self) {
         pygame.draw.rect(self.screen, (192, 192, 192), pygame.Rect(0, 0, self.width, self.height))
         for item in componentsList:
             coordinates = coordinatesDictionary[str(item)]
@@ -229,6 +229,7 @@ class SidebarMenu():
                 return True
         return None
     }
+}
 
 /* SOCKET CLASS
 -----------------------------------------------------------------
@@ -263,7 +264,7 @@ class Socket {
 -----------------------------------------------------------------
 */
 
-class Wire:
+class Wire {
     constructor(self, screen, socket1, socket2):
         self.screen = screen
         self.socket1 = socket1
@@ -277,12 +278,13 @@ class Wire:
     function update(self){
         self.draw()
     }
+}
 
 /* BIN CLASS
 -----------------------------------------------------------------
 */
 // If a component is drag and dropped onto the bin, it is deleted.  
-class Bin():
+class Bin {
     function constructor(self, screen, x, y, size=40, color=(255, 255, 255)){
         self.screen = screen
         self.x = x
@@ -299,12 +301,13 @@ class Bin():
             if self.rect.colliderect(component.rect):
                 components.remove(component)
     }
+}
 
 /* INFORMATION MENU CLASS
 -----------------------------------------------------------------
 */
-
-class InformationMenu():
+// Displays useful information for each component
+class InformationMenu {
     function constructor(self, screen, x, y, size=40, color=(255, 255, 255)){
         self.screen = screen
         self.image = pygame.image.load(image_path)
@@ -334,6 +337,7 @@ class InformationMenu():
         pygame.draw.rect(self.info_screen, (0, 0, 0), self.info_screen.get_rect(), 2)
         self.screen.blit(self.info_screen, self.info_screen_rect)
     }
+}
 
 /* SAVE AND LOAD CIRCUITS - DATABASE CLASS
 -----------------------------------------------------------------
@@ -356,7 +360,7 @@ circuit_config = {
     ]
 }  
 
-class Database():
+class Database {
     function constructor(self, DBname){
         self.DBname = DBname
         self.connection = sqlite3.connect(DBname)
@@ -396,9 +400,7 @@ class Database():
         else:
             return None
     }
-
-running = True
-
+}
 function dragAndDrop() {
     if event.type == pygame.MOUSEBUTTONDOWN:
         if event.button == 1:
@@ -421,16 +423,46 @@ function dragAndDrop() {
         return None
 }
 
+running = True
+
 function main() {
+
+    pygame.init()
+    pygame.display.set_caption("Logic Gate Simulator")
+    screen = pygame.display.set_mode((800, 600)) 
+    clock = pygame.time.Clock()
+    
+    // Initialize all necessary objects
+    sidebar = SidebarMenu()
+    bin = Bin()
+    logic_gates = []
+    sockets = []
+    wires = []
+    switch = Switch()
+    info_button = InfoButton()
+    info_menu = InfoMenu()
+    db_manager = DatabaseManager()
+
+    // The main loop
     while running == True:
         for event in pygame.event.get():
             // Checks if the program was quit
             if event.type == pygame.QUIT:
                 running = False
-
-            dragAndDrop()
+            else:
+                dragAndDrop()
 
         WIN.fill(WHITE)
+        // Draw the sidebar menu, bin, switch, and info button
+        SidebarMenu.draw(screen)
+        bin.draw(screen)
+        switch.draw(screen)
+        InformationMenu.draw(screen)
+        
+        // Draw each logic gate and its sockets
+        for gate in logic_gates:
+            gate.draw(screen)
+
         pygame.display.update()
     
 }
