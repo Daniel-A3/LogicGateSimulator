@@ -8,19 +8,20 @@ pygame.display.set_caption("OneOrZero")
 WHITE = (255, 255, 255)
 
 FPS = 60
-
+# Loads the image and transforms it into an x:y ratio that is the same as its resolution.
+# This is so that all the icons are the same size.
 AND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ANDGate.png"))
-AND_GATE = pygame.transform.scale(AND_GATE_IMAGE, (100,56))
+AND_GATE = pygame.transform.smoothscale(AND_GATE_IMAGE, (128, 64))
 OR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ORGate.png"))
-OR_GATE = pygame.transform.scale(OR_GATE_IMAGE, (100,56))
+OR_GATE = pygame.transform.smoothscale(OR_GATE_IMAGE, (128, 64))
 NOT_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NOTGate.png"))
-NOT_GATE = pygame.transform.scale(NOT_GATE_IMAGE, (100,56))
+NOT_GATE = pygame.transform.smoothscale(NOT_GATE_IMAGE, (128, 64))
 NAND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NANDGate.png"))
-NAND_GATE = pygame.transform.scale(NAND_GATE_IMAGE, (125,56))
+NAND_GATE = pygame.transform.smoothscale(NAND_GATE_IMAGE, (128, 64))
 NOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NORGate.png"))
-NOR_GATE = pygame.transform.scale(NOR_GATE_IMAGE, (100,56))
+NOR_GATE = pygame.transform.smoothscale(NOR_GATE_IMAGE, (128, 64))
 XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
-XOR_GATE = pygame.transform.scale(XOR_GATE_IMAGE, (100,56))
+XOR_GATE = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 
 def drawWindow():
     WIN.fill(WHITE)
