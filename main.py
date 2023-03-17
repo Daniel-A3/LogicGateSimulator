@@ -30,28 +30,36 @@ componentList = ["ANDGate", "ORGate", "NOTGate", "NANDGate", "NORGate", "XORGate
 # --------------------------------------------------------------------------------------------
 
 class LogicGate:
-    def __init__(self, gateType):
-        self.gateType = gateType
+    def __init__(self):
+        #self.gateType = gateType
         self.output = 0
     
-    def drawGate(self, SCREEN):
+    def draw(self):
         SCREEN.blit(self.image, (self.x, self.y))
 
 class BinaryGate(LogicGate):
-    def __init__(self, gateType):
-        super().__init__(gateType)
+    def __init__(self):
+        super().__init__()
+        self.inputA = False
+        self.inputB = False
 
 class UnaryGate(LogicGate):
-    def __init__(self, gateType):
-        super().__init__(gateType)
+    def __init__(self):
+        super().__init__()
+        self.input = False
 
 class ANDGate(BinaryGate):
-    def __init__(self, gateType):
-        super().__init__(gateType)
+    def __init__(self):
+        super().__init__()
+        self.image = AND_GATE_IMAGE
+        self.x = 0
+        self.y = 0
 
 def drawWindow():
-    WIN.fill(WHITE)
-    WIN.blit(BACKGROUND, (250,0))
+    SCREEN.fill(WHITE)
+    SCREEN.blit(BACKGROUND, (250,0))
+    andGate = ANDGate()
+    andGate.draw()
     pygame.display.update()
 
 def dragAndDrop():
