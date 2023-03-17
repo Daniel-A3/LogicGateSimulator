@@ -3,7 +3,7 @@ import pygame, os
 pygame.init()
 
 WIDTH, HEIGHT = 1332, 802
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("OneOrZero")
 WHITE = (255, 255, 255)
 
@@ -24,10 +24,44 @@ NOR_GATE = pygame.transform.smoothscale(NOR_GATE_IMAGE, (128, 64))
 XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
 XOR_GATE = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 
+componentList = ["ANDGate", "ORGate", "NOTGate", "NANDGate", "NORGate", "XORGate", "Switch"]
+
+# LOGIC GATES
+# --------------------------------------------------------------------------------------------
+
+class LogicGate:
+    def __init__(self, gateType):
+        self.gateType = gateType
+        self.output = 0
+    
+    def drawGate(self, SCREEN):
+        SCREEN.blit(self.image, (self.x, self.y))
+
+class BinaryGate(LogicGate):
+    def __init__(self, gateType):
+        super().__init__(gateType)
+
+class UnaryGate(LogicGate):
+    def __init__(self, gateType):
+        super().__init__(gateType)
+
+class ANDGate(BinaryGate):
+    def __init__(self, gateType):
+        super().__init__(gateType)
+
 def drawWindow():
     WIN.fill(WHITE)
     WIN.blit(BACKGROUND, (250,0))
     pygame.display.update()
+
+def dragAndDrop():
+    mousePos = pygame.mouse.get_pos()
+    for event in pygame.event.get():
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Checks if the mouse is clicked above a component
+            for component in componentList:
+                if component.rect.collidepoint(mousePos):
+                    component.dragging = True
 
 def main():
     # The main game loop
