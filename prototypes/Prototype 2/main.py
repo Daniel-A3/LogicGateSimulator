@@ -30,8 +30,7 @@ XOR_GATE = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 componentList = {"ANDGate", "ORGate", "NOTGate", "NANDGate",
                   "NORGate", "XORGate", "Switch"}
 
-allSprites = pygame.sprite.Group()
-
+logicGates = pygame.sprite.Group()
 
 # LOGIC GATES
 # --------------------------------------------------------------------------------------------
@@ -40,6 +39,7 @@ class LogicGate(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.output = 0
+        self.dragging = False
     
     #def draw(self):
     #   SCREEN.blit(self.image, (self.x, self.y))
@@ -58,6 +58,7 @@ class UnaryGate(LogicGate):
 class ANDGate(BinaryGate):
     def __init__(self, x, y):
         super().__init__()
+        pygame.sprite.Sprite.__init__(self, logicGates)
         self.image = AND_GATE
         #self.rect = self.image.get_rect()
         self.rect = self.image.get_rect()
@@ -68,6 +69,7 @@ class ANDGate(BinaryGate):
 class ORGate(BinaryGate):
     def __init__(self, x, y):
         super().__init__()
+        pygame.sprite.Sprite.__init__(self, logicGates)
         self.image = OR_GATE
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -75,14 +77,10 @@ class ORGate(BinaryGate):
         pygame.draw.rect(SCREEN, (255,0,0), self.rect)
 
 
-allSprites.add(ANDGate(0,0))
-allSprites.add(ORGate(128,0))
-
-
 def drawWindow():
     SCREEN.fill(WHITE)
     SCREEN.blit(BACKGROUND, (256,0))
-    allSprites.draw(SCREEN)
+    logicGates.draw(SCREEN)
     pygame.display.update()
 
 def dragAndDrop(component):
@@ -119,11 +117,14 @@ def main():
             # Quits the game if it is exited
             if event.type == pygame.QUIT:
                 run = False
-        for component in allSprites:
+        for component in logicGates:
+            print(component)
             dragAndDrop(component)
 
         drawWindow()
-
+    
+    logicGates.add(ANDGate(0,0))
+    logicGates.add(ORGate(128,0))
     pygame.quit()
 
 if __name__ == "__main__":
