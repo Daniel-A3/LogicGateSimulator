@@ -11,17 +11,17 @@ BACKGROUND = pygame.image.load(os.path.join("Assets", "backgroundGrid.png"))
 
 FPS = 60
 #  Ensures that all the icons are the same size.
-AND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ANDGate.png"))
+AND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ANDGate.png")).convert_alpha()
 AND_GATE = pygame.transform.smoothscale(AND_GATE_IMAGE, (128, 64))
-OR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ORGate.png"))
+OR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ORGate.png")).convert_alpha()
 OR_GATE = pygame.transform.smoothscale(OR_GATE_IMAGE, (128, 64))
-NOT_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NOTGate.png"))
+NOT_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NOTGate.png")).convert_alpha()
 NOT_GATE = pygame.transform.smoothscale(NOT_GATE_IMAGE, (128, 64))
-NAND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NANDGate.png"))
+NAND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NANDGate.png")).convert_alpha()
 NAND_GATE = pygame.transform.smoothscale(NAND_GATE_IMAGE, (128, 64))
-NOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NORGate.png"))
+NOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NORGate.png")).convert_alpha()
 NOR_GATE = pygame.transform.smoothscale(NOR_GATE_IMAGE, (128, 64))
-XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
+XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png")).convert_alpha()
 XOR_GATE = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 
 #SWITCH_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
@@ -29,6 +29,9 @@ XOR_GATE = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 
 componentDict = {"AND" : "AND_GATE", "OR" : "OR_GATE", "NOT" : "NOT_GATE", "NAND" : "NAND_GATE",
                   "NOR" : "NOR_GATE", "XOR" : "XOR_GATE", "SWITCH" : "SWITCH"}
+
+allSprites = pygame.sprite.Group()
+
 
 # LOGIC GATES
 # --------------------------------------------------------------------------------------------
@@ -39,6 +42,7 @@ class LogicGate(pygame.sprite.Sprite):
         self.output = 0
     
     def draw(self):
+        pygame.draw.rect(SCREEN, (255,0,0), 1)
         SCREEN.blit(self.image, (self.x, self.y))
 
 class BinaryGate(LogicGate):
@@ -57,14 +61,26 @@ class ANDGate(BinaryGate):
         super().__init__()
         self.image = AND_GATE
         self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
+        self.rect.x = x
+        self.rect.y = y
+
+class ORGate(BinaryGate):
+    def __init__(self, x, y):
+        super().__init__()
+        self.image = OR_GATE
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
+allSprites.add(ANDGate(0,0))
+allSprites.add(ORGate(128,0))
+
 
 def drawWindow():
     SCREEN.fill(WHITE)
-    SCREEN.blit(BACKGROUND, (250,0))
-    andGate = ANDGate(30,30)
-    andGate.draw()
+    SCREEN.blit(BACKGROUND, (256,0))
+    allSprites.draw(SCREEN)
     pygame.display.update()
 
 def dragAndDrop():
@@ -72,9 +88,11 @@ def dragAndDrop():
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Checks if the mouse is clicked above a component
-            for component in componetDict:
+            for component in componentDict:
                 if component.rect.collidepoint(mousePos):
                     component.dragging = True
+
+
 
 def main():
     # The main game loop
