@@ -24,15 +24,21 @@ NOR_GATE = pygame.transform.smoothscale(NOR_GATE_IMAGE, (128, 64))
 XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
 XOR_GATE = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 
-componentList = ["ANDGate", "ORGate", "NOTGate", "NANDGate", "NORGate", "XORGate", "Switch"]
+#SWITCH_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
+#SWITCH = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
+
+componentDict = {"AND" : "AND_GATE", "OR" : "OR_GATE", "NOT" : "NOT_GATE", "NAND" : "NAND_GATE",
+                  "NOR" : "NOR_GATE", "XOR" : "XOR_GATE", "SWITCH" : "SWITCH"}
 
 # LOGIC GATES
 # --------------------------------------------------------------------------------------------
 
-class LogicGate:
-    def __init__(self):
-        #self.gateType = gateType
+class LogicGate(pygame.sprite.Sprite):
+    def __init__(self, gate):
+        pygame.sprite.Sprite.__init__(self)
         self.output = 0
+        self.gateType = gate
+        self.image = componentDict[self.gateType]
     
     def draw(self):
         SCREEN.blit(self.image, (self.x, self.y))
