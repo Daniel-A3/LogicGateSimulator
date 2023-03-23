@@ -59,6 +59,7 @@ class ANDGate(BinaryGate):
     def __init__(self, x, y):
         super().__init__()
         self.image = AND_GATE
+        #self.rect = self.image.get_rect()
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
