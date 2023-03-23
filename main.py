@@ -27,8 +27,8 @@ XOR_GATE = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 #SWITCH_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
 #SWITCH = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 
-componentDict = {"AND" : "AND_GATE", "OR" : "OR_GATE", "NOT" : "NOT_GATE", "NAND" : "NAND_GATE",
-                  "NOR" : "NOR_GATE", "XOR" : "XOR_GATE", "SWITCH" : "SWITCH"}
+componentList = {"ANDGate", "ORGate", "NOTGate", "NANDGate",
+                  "NORGate", "XORGate", "Switch"}
 
 allSprites = pygame.sprite.Group()
 
@@ -41,9 +41,8 @@ class LogicGate(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.output = 0
     
-    def draw(self):
-        pygame.draw.rect(SCREEN, (255,0,0), 1)
-        SCREEN.blit(self.image, (self.x, self.y))
+    #def draw(self):
+    #   SCREEN.blit(self.image, (self.x, self.y))
 
 class BinaryGate(LogicGate):
     def __init__(self):
@@ -63,6 +62,7 @@ class ANDGate(BinaryGate):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        pygame.draw.rect(SCREEN, (255,0,0), self.rect, 1)
 
 class ORGate(BinaryGate):
     def __init__(self, x, y):
@@ -88,10 +88,9 @@ def dragAndDrop():
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Checks if the mouse is clicked above a component
-            for component in componentDict:
+            for component in componentList:
                 if component.rect.collidepoint(mousePos):
                     component.dragging = True
-
 
 
 def main():
