@@ -34,11 +34,9 @@ componentDict = {"AND" : "AND_GATE", "OR" : "OR_GATE", "NOT" : "NOT_GATE", "NAND
 # --------------------------------------------------------------------------------------------
 
 class LogicGate(pygame.sprite.Sprite):
-    def __init__(self, gate):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.output = 0
-        self.gateType = gate
-        self.image = componentDict[self.gateType]
     
     def draw(self):
         SCREEN.blit(self.image, (self.x, self.y))
@@ -55,16 +53,17 @@ class UnaryGate(LogicGate):
         self.input = False
 
 class ANDGate(BinaryGate):
-    def __init__(self):
+    def __init__(self, x, y):
         super().__init__()
-        self.image = AND_GATE_IMAGE
-        self.x = 0
-        self.y = 0
+        self.image = AND_GATE
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
 
 def drawWindow():
     SCREEN.fill(WHITE)
     SCREEN.blit(BACKGROUND, (250,0))
-    andGate = ANDGate()
+    andGate = ANDGate(30,30)
     andGate.draw()
     pygame.display.update()
 
@@ -73,7 +72,7 @@ def dragAndDrop():
     for event in pygame.event.get():
         if event.type == pygame.MOUSEBUTTONDOWN:
             # Checks if the mouse is clicked above a component
-            for component in componentList:
+            for component in componetDict:
                 if component.rect.collidepoint(mousePos):
                     component.dragging = True
 
