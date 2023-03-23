@@ -97,8 +97,18 @@ def dragAndDrop(component):
                     mouseX, mouseY = event.pos
                     offsetX = component.rect.x - mouseX
                     offsetY = component.rect.y - mouseY
+
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            component.dragging = False
+            # Checks if it is the right mouse button that is released
+            if event.button == 1:
+                component.dragging = False
+
+        elif event.type == pygame.MOUSEMOTION:
+            if component.dragging == True:
+                mouseX, mouseY = event.pos
+                component.rect.x = mouseX + offsetX
+                component.rect.y = mouseY + offsetY
+                print("test")
 
 
 def main():
@@ -109,6 +119,9 @@ def main():
             # Quits the game if it is exited
             if event.type == pygame.QUIT:
                 run = False
+        for component in allSprites:
+            dragAndDrop(component)
+
         drawWindow()
 
     pygame.quit()
