@@ -24,8 +24,8 @@ NOR_GATE = pygame.transform.smoothscale(NOR_GATE_IMAGE, (128, 64))
 XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png")).convert_alpha()
 XOR_GATE = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 
-#SWITCH_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
-#SWITCH = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
+#SWITCH_IMAGE = pygame.image.load(os.path.join("Assets", "Switch.png")).convert_alpha()
+#SWITCH = pygame.transform.smoothscale(SWITCH_IMAGE, (128, 64))
 
 componentList = {"ANDGate", "ORGate", "NOTGate", "NANDGate",
                   "NORGate", "XORGate", "Switch"}
@@ -62,7 +62,7 @@ class ANDGate(BinaryGate):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        pygame.draw.rect(SCREEN, (255,0,0), self.rect, 1)
+        pygame.draw.rect(SCREEN, (255,0,0), self.rect)
 
 class ORGate(BinaryGate):
     def __init__(self, x, y):
