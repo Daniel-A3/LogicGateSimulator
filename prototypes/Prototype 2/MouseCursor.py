@@ -1,0 +1,2 @@
+class MouseCursor:
+    pass

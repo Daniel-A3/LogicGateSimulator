@@ -27,6 +27,9 @@ XOR_GATE = pygame.transform.smoothscale(XOR_GATE_IMAGE, (128, 64))
 def drawWindow():
     SCREEN.fill(WHITE)
     SCREEN.blit(BACKGROUND, (250,0))
+
+    SCREEN.blit(AND_GATE, (0,0))
+
     pygame.display.update()
 
 def main():
