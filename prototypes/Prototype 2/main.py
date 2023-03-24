@@ -1,9 +1,9 @@
 import pygame, os
+import LogicGates
+import Game
 
 pygame.init()
 
-WIDTH, HEIGHT = 1332, 802
-SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("OneOrZero")
 WHITE = (255, 255, 255)
 
@@ -32,57 +32,6 @@ componentList = {"ANDGate", "ORGate", "NOTGate", "NANDGate",
 
 logicGates = pygame.sprite.Group()
 
-# LOGIC GATES
-# --------------------------------------------------------------------------------------------
-
-class LogicGate(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-        self.output = 0
-        self.dragging = False
-    
-    #def draw(self):
-    #   SCREEN.blit(self.image, (self.x, self.y))
-
-class BinaryGate(LogicGate):
-    def __init__(self):
-        super().__init__()
-        self.inputA = False
-        self.inputB = False
-
-class UnaryGate(LogicGate):
-    def __init__(self):
-        super().__init__()
-        self.input = False
-
-class ANDGate(BinaryGate):
-    def __init__(self, x, y):
-        super().__init__()
-        pygame.sprite.Sprite.__init__(self, logicGates)
-        self.image = AND_GATE
-        #self.rect = self.image.get_rect()
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        pygame.draw.rect(SCREEN, (255,0,0), self.rect)
-
-class ORGate(BinaryGate):
-    def __init__(self, x, y):
-        super().__init__()
-        pygame.sprite.Sprite.__init__(self, logicGates)
-        self.image = OR_GATE
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-        pygame.draw.rect(SCREEN, (255,0,0), self.rect)
-
-
-def drawWindow():
-    SCREEN.fill(WHITE)
-    SCREEN.blit(BACKGROUND, (256,0))
-    logicGates.draw(SCREEN)
-    pygame.display.update()
-
 def dragAndDrop(component):
     #mousePos = pygame.mouse.get_pos()
     for event in pygame.event.get():
@@ -108,20 +57,16 @@ def dragAndDrop(component):
                 component.rect.y = mouseY + offsetY
                 print("test")
 
-
 def main():
+
+    game = Game(1332, 802)
+
     # The main game loop
+    game.gameLoop()
+
     run = True
     while run:
-        for event in pygame.event.get():
-            # Quits the game if it is exited
-            if event.type == pygame.QUIT:
-                run = False
-        for component in logicGates:
-            print(component)
-            dragAndDrop(component)
-
-        drawWindow()
+        game.drawWindow()
     
     logicGates.add(ANDGate(0,0))
     logicGates.add(ORGate(128,0))
