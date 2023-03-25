@@ -5,7 +5,9 @@ class Game:
         self.width = width
         self.height = height
         self.background = background
-        self.screen = pygame.display.set_mode(self.width, self.height)
+        # Sets the width and height of the program.
+        self.screen = pygame.display.set_mode((self.width, self.height))
+
         self.run = True
 
     # Checks if the game was quit
@@ -16,11 +18,18 @@ class Game:
 
     # Draws the pygame window
     def drawWindow(self):
-        self.screen.fill(255, 255, 255)
-        self.screen.blit(self.background, (250,0))
+        self.screen.fill((255, 255, 255))
+        self.screen.blit(self.background, (256,0))
 
-        #self.screen.blit(AND_GATE, (0,0))
-        
         pygame.display.flip()
 
-    pygame.display.update()
+    # Draws all the gates in the sidebar menu
+    def drawGates(self, ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate):
+        self.screen.blit(ANDGate, (0,0))
+        self.screen.blit(ORGate, (128,0))
+        self.screen.blit(NOTGate, (0,100))
+        self.screen.blit(NANDGate, (128,100))
+        self.screen.blit(NORGate, (0,200))
+        self.screen.blit(XORGate, (128,200))
+
+        pygame.display.flip()
