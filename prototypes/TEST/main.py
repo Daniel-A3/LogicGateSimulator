@@ -1,8 +1,7 @@
 import pygame, os
 from Game import Game
 from MouseCursor import MouseCursor
-from LogicGates import LogicGate
-from LogicGates import ANDGate
+from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate
 
 #General setup
 pygame.init()
@@ -36,17 +35,32 @@ def main():
     # Creates an instance of the MouseCursor class - represents the users mouse
     mouse = MouseCursor()
 
-    andgate = ANDGate(logicGateSprites)
-    andgate.test()
+    # Creates an instance of all logic gates
+    andGate = ANDGate(AND_GATE_IMAGE)
+    orGate = ORGate(OR_GATE_IMAGE)
+    notGate = NOTGate(NOT_GATE_IMAGE)
+    nandGate = NANDGate(NAND_GATE_IMAGE)
+    norGate = NORGate(NOR_GATE_IMAGE)
+    xorGate = XORGate(XOR_GATE_IMAGE)
 
+    componentList = [andGate, orGate, notGate, nandGate, norGate, xorGate]
+
+    # Adds all logic gate instances to the sprite group
+    for component in componentList:
+        logicGateSprites.add(component)
+    
     game.drawWindow()
     # Main game loop
     while game.run == True:
         game.processEvents()
-        game.drawGates(AND_GATE_IMAGE, OR_GATE_IMAGE, NOT_GATE_IMAGE, 
-                       NAND_GATE_IMAGE, NOR_GATE_IMAGE, XOR_GATE_IMAGE)
+
+        logicGateSprites.draw(SCREEN)
+            
         mouse.update()
+        pygame.display.flip()
         clock.tick(60)
+    
+    pygame.quit()
 
 if __name__ == "__main__":
     main()
