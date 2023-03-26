@@ -2,6 +2,7 @@ import pygame, os
 from Game import Game
 from MouseCursor import MouseCursor
 from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate
+import dragAndDrop
 
 #General setup
 pygame.init()
@@ -49,14 +50,27 @@ def main():
     for component in componentList:
         logicGateSprites.add(component)
     
+    logicGateSprites.draw(SCREEN)
+    
     game.drawWindow()
+
     # Main game loop
     while game.run == True:
+        # Checks if the program was quit
         game.processEvents()
-
-        logicGateSprites.draw(SCREEN)
-            
+        
+        # Gets the mouses x and y position
         mouse.update()
+        # Runs the drag and drop function
+        # Allows the user to drag gates from the sidebar menu and drop 
+        # them onto the workspace.
+        dragAndDrop()
+        # Regenerate all components in the sidebar menu.
+        # This is so that if they are drag and dropped, a new instance appears
+        # in its original place.
+        logicGateSprites.draw(SCREEN)
+
+        # Update the display
         pygame.display.flip()
         clock.tick(60)
     
