@@ -2,7 +2,7 @@ import pygame, os
 from Game import Game
 from MouseCursor import MouseCursor
 from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate
-import dragAndDrop
+from dragAndDrop import dragAndDrop
 
 #General setup
 pygame.init()
@@ -59,8 +59,8 @@ def main():
         # Checks if the program was quit
         game.processEvents()
         
-        # Gets the mouses x and y position
         mouse.update()
+        pygame.draw.rect(SCREEN, (255, 0, 0), mouse.cursor)
         # Runs the drag and drop function
         # Allows the user to drag gates from the sidebar menu and drop 
         # them onto the workspace.
