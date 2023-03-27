@@ -28,7 +28,10 @@ NAND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NANDGate.png"))
 NOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NORGate.png"))
 XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
 
+# Sprites for all logic gate components stored in this group
 logicGateSprites = pygame.sprite.Group()
+# Sprites that are drag and dropped onto the workspace join this group
+draggedGroup = pygame.sprite.Group()
 
 def main():
     # Creates an instance of the Game class - represents the current game running
@@ -64,7 +67,7 @@ def main():
         # Runs the drag and drop function
         # Allows the user to drag gates from the sidebar menu and drop 
         # them onto the workspace.
-        dragAndDrop()
+        dragAndDrop(draggedGroup, logicGateSprites, mouse)
         # Regenerate all components in the sidebar menu.
         # This is so that if they are drag and dropped, a new instance appears
         # in its original place.
