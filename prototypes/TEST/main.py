@@ -78,8 +78,6 @@ def main():
         logicGateSprites.add(component)
     
     logicGateSprites.draw(SCREEN)
-    
-    game.drawWindow()
 
     run = True
 
@@ -91,7 +89,7 @@ def main():
         mouse.update()
         # Tests mouse rect
         # pygame.draw.rect(SCREEN, (255, 0, 0), mouse.cursor)
-
+        game.drawWindow()
         # Runs the drag and drop function
         # Allows the user to drag gates from the sidebar menu and drop 
         # them onto the workspace.

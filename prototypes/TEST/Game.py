@@ -12,7 +12,7 @@ class Game:
 
     # Checks if the game was quit
     def processEvents(self):
-        for event in pygame.event.get():
+       for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.run = False
 
