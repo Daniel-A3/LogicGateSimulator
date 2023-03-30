@@ -57,17 +57,22 @@ def main():
     
     game.drawWindow()
 
+    run = True
+
     # Main game loop
-    while game.run == True:
+    # while game.run == True
+    while run == True:
         # Checks if the program was quit
         game.processEvents()
         
         mouse.update()
-        pygame.draw.rect(SCREEN, (255, 0, 0), mouse.cursor)
+        # Tests mouse rect
+        # pygame.draw.rect(SCREEN, (255, 0, 0), mouse.cursor)
+
         # Runs the drag and drop function
         # Allows the user to drag gates from the sidebar menu and drop 
         # them onto the workspace.
-        dragAndDrop(draggedGroup, logicGateSprites, mouse)
+        dragAndDrop(draggedGroup, logicGateSprites, mouse, run)
         # Regenerate all components in the sidebar menu.
         # This is so that if they are drag and dropped, a new instance appears
         # in its original place.
