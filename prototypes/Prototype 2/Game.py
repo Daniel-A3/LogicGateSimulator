@@ -1,29 +1,22 @@
-# GAME CLASS
+# THE GAME CLASS
 # --------------------------------------------------------------------------------------------
 import pygame
-import LogicGates
-from LogicGates import logicGateSprites
-import dragAndDrop
-
-WIDTH, HEIGHT = 1332, 802
-SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
 class Game:
-    def __init__(self, WIDTH, HEIGHT):
-        pass
+    def __init__(self, width, height, background, screen):
+        self.width = width
+        self.height = height
+        self.background = background
+        self.screen = screen
+        self.run = True
 
-    def drawWindow():
-        SCREEN.fill(WHITE)
-        SCREEN.blit(BACKGROUND, (256,0))
-        logicGateSprites.draw(SCREEN)
-        pygame.display.update()
-
-    # The main game loop
-    def gameLoop():
-        for event in pygame.event.get():
-            # Quits the game if it is exited
+    # Checks if the game was quit
+    def processEvents(self):
+       for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                run = False
-        for component in logicGateSprites:
-            print(component)
-            dragAndDrop(component)
+                self.run = False
+
+    # Draws the pygame window
+    def drawWindow(self):
+        self.screen.fill((255, 255, 255))
+        self.screen.blit(self.background, (256,0))
