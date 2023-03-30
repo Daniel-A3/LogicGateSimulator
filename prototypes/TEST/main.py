@@ -32,6 +32,30 @@ XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
 logicGateSprites = pygame.sprite.Group()
 # Sprites that are drag and dropped onto the workspace join this group
 draggedGroup = pygame.sprite.Group()
+handled = False
+
+def dragAndDrop(draggedGroup, logicGateSprites, mouse):
+
+    if pygame.mouse.get_pressed()[0]:
+        print(1)
+        #handled = True
+        for component in logicGateSprites:
+            if component.rect.collidepoint(mouse.xPos, mouse.yPos):
+                component.rect.center = mouse.xPos, mouse.yPos
+    
+    #return handled
+        #if logicGateSprites.rect.collidepoint(mouse.rect):
+
+    #allEvents = pygame.event.get()
+        #for event in allEvents:
+        #    print(event)
+        #    if event.type == pygame.MOUSEBUTTONDOWN:
+        #        print(1)
+        #        draggedGroupList = pygame.sprite.spritecollide(mouse, logicGateSprites, True)
+
+        #for component in logicGateSprites:
+        #    pass
+
 
 def main():
     # Creates an instance of the Game class - represents the current game running
@@ -60,8 +84,7 @@ def main():
     run = True
 
     # Main game loop
-    # while game.run == True
-    while run == True:
+    while game.run == True:
         # Checks if the program was quit
         game.processEvents()
         
@@ -72,7 +95,7 @@ def main():
         # Runs the drag and drop function
         # Allows the user to drag gates from the sidebar menu and drop 
         # them onto the workspace.
-        dragAndDrop(draggedGroup, logicGateSprites, mouse, run)
+        dragAndDrop(draggedGroup, logicGateSprites, mouse)
         # Regenerate all components in the sidebar menu.
         # This is so that if they are drag and dropped, a new instance appears
         # in its original place.
