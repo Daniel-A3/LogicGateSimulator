@@ -1,3 +1,5 @@
+# MOUSE CURSOR CLASS
+# --------------------------------------------------------------------------------------------
 import pygame
 
 class MouseCursor(pygame.sprite.Sprite):
