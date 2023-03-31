@@ -10,7 +10,8 @@ class LogicGate(pygame.sprite.Sprite):
         # Resizes the image and uses a smooth scaling algorithm for better quality
         self.image = pygame.transform.smoothscale(image, (128, 64))
         self.rect = self.image.get_rect()
-        self.dragging = False
+    
+    count = 0
 
 # Binary gates have two inputs
 class BinaryGate(LogicGate):
@@ -30,6 +31,7 @@ class ANDGate(BinaryGate):
         super().__init__(image)
         self.rect.x = 0
         self.rect.y = 125
+        self.name = "ANDGate"
         
 
 class ORGate(BinaryGate):

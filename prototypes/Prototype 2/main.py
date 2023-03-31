@@ -33,15 +33,25 @@ logicGateSprites = pygame.sprite.Group()
 draggedGroup = pygame.sprite.Group()
 # Creates a new copy of the sprites each time one is dragged away from the sidebar menu
 sidebarSprites = pygame.sprite.Group()
+# Makes sure the sprites that were drag and dropped before are not deleted when
+# a new instance of the same component is dragged.
+placedSprites = pygame.sprite.Group()
 
 # DRAG AND DROP FUNCTION
 # --------------------------------------------------------------------------------------------
-def dragAndDrop(logicGateSprites, mouse):
+def dragAndDrop(logicGateSprites, mouse, classDict, imageDict):
 
     if pygame.mouse.get_pressed()[0]:
         # Checks if any of the components were clicked
         for component in logicGateSprites:
             if component.rect.collidepoint(mouse.xPos, mouse.yPos):
+                print(component.name)
+                image = imageDict[component.name]
+                print(image)
+                exampleDict = {"ANDGate" : ANDGate}
+                newClass = exampleDict[component.name]
+                newInstance = newClass(image)
+                print(newInstance)
                 # Makes sure that only 1 component can be dragged at a time
                 if len(draggedGroup.sprites()) == 0:
                     draggedGroup.add(component)
@@ -50,13 +60,15 @@ def dragAndDrop(logicGateSprites, mouse):
                     draggedGroup.add(component)
         # Updates the position of the dragged component to the mouse position
         draggedGroup.sprites()[0].rect.center = mouse.xPos, mouse.yPos
+        placedSprites.add(draggedGroup.sprites()[0])
+        print(placedSprites.sprites())
 
 def main():
     # Creates an instance of the Game class - represents the current game running
     game = Game(WIDTH, HEIGHT, BACKGROUND, SCREEN)
     # Creates an instance of the MouseCursor class - represents the users mouse
     mouse = MouseCursor()
-
+    
     # Creates an instance of all logic gates
     andGate = ANDGate(AND_GATE_IMAGE)
     orGate = ORGate(OR_GATE_IMAGE)
@@ -64,7 +76,7 @@ def main():
     nandGate = NANDGate(NAND_GATE_IMAGE)
     norGate = NORGate(NOR_GATE_IMAGE)
     xorGate = XORGate(XOR_GATE_IMAGE)
-
+    
     # Creates instances of gates that will replace ones that are dragged
     andGateOriginal = ANDGate(AND_GATE_IMAGE)
     orGateOriginal = ORGate(OR_GATE_IMAGE)
@@ -73,18 +85,26 @@ def main():
     norGateOriginal = NORGate(NOR_GATE_IMAGE)
     xorGateOriginal = XORGate(XOR_GATE_IMAGE)
 
+    classDict = {andGateOriginal : "ANDGate", orGateOriginal : "ORGate", notGateOriginal : "NOTGate", 
+                   nandGateOriginal : "NANDGate", norGateOriginal : "NORGate", xorGateOriginal : "XORGate"}
+    
+    imageDict = {"ANDGate" : AND_GATE_IMAGE, "ORGate" :  OR_GATE_IMAGE, "NOTGate" : NOT_GATE_IMAGE,
+                  "NANDGate" : NAND_GATE_IMAGE, "NORGate" : NOR_GATE_IMAGE, "XORGate" : XOR_GATE_IMAGE}
+
     componentList = [andGate, orGate, notGate, nandGate, norGate, xorGate]
+
     sidebarList = [andGateOriginal, orGateOriginal, notGateOriginal, 
                    nandGateOriginal, norGateOriginal, xorGateOriginal]
-
     # Adds all logic gate instances to the sprite group
+    
     for component in componentList:
         logicGateSprites.add(component)
+    
     for component in sidebarList:
         sidebarSprites.add(component)
 
     # Draws the sprites onto the screen
-    logicGateSprites.draw(SCREEN)
+    sidebarSprites.draw(SCREEN)
 
     run = True
 
@@ -100,12 +120,13 @@ def main():
         # Runs the drag and drop function
         # Allows the user to drag gates from the sidebar menu and drop 
         # them onto the workspace.
-        dragAndDrop(logicGateSprites, mouse)
+        dragAndDrop(logicGateSprites, mouse, classDict, imageDict)
         # Regenerate all components in the sidebar menu.
         # This is so that if they are drag and dropped, a new instance appears
         # in its original place.
         sidebarSprites.draw(SCREEN)
         logicGateSprites.draw(SCREEN)
+        placedSprites.draw(SCREEN)
 
         # Update the display
         pygame.display.flip()
