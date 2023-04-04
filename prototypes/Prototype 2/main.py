@@ -51,7 +51,7 @@ def dragAndDrop(logicGateSprites, mouse, classDict, imageDict):
                 print(newInstance)
                 # Makes sure that only 1 component can be dragged at a time
                 if len(draggedGroup.sprites()) == 0:
-                    draggedList
+                    draggedGroup.add(component)
                 else:
                     draggedGroup.empty()
                     draggedGroup.add(component)
@@ -92,8 +92,6 @@ def main():
 
     sidebarList = [andGateOriginal, orGateOriginal, notGateOriginal, 
                    nandGateOriginal, norGateOriginal, xorGateOriginal]
-    
-    draggedList = []
 
     # Adds all logic gate instances to the sprite group
     
