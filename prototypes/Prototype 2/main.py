@@ -45,16 +45,13 @@ def dragAndDrop(logicGateSprites, mouse, classDict, imageDict):
         # Checks if any of the components were clicked
         for component in logicGateSprites:
             if component.rect.collidepoint(mouse.xPos, mouse.yPos):
-                print(component.name)
                 image = imageDict[component.name]
-                print(image)
-                exampleDict = {"ANDGate" : ANDGate}
-                newClass = exampleDict[component.name]
-                newInstance = newClass(image)
+                newClass = classDict[component.name]
+                newInstance = newClass(image, component.name)
                 print(newInstance)
                 # Makes sure that only 1 component can be dragged at a time
                 if len(draggedGroup.sprites()) == 0:
-                    draggedGroup.add(component)
+                    draggedList
                 else:
                     draggedGroup.empty()
                     draggedGroup.add(component)
@@ -70,23 +67,23 @@ def main():
     mouse = MouseCursor()
     
     # Creates an instance of all logic gates
-    andGate = ANDGate(AND_GATE_IMAGE)
-    orGate = ORGate(OR_GATE_IMAGE)
-    notGate = NOTGate(NOT_GATE_IMAGE)
-    nandGate = NANDGate(NAND_GATE_IMAGE)
-    norGate = NORGate(NOR_GATE_IMAGE)
-    xorGate = XORGate(XOR_GATE_IMAGE)
+    andGate = ANDGate(AND_GATE_IMAGE, "ANDGate")
+    orGate = ORGate(OR_GATE_IMAGE, "ORGate")
+    notGate = NOTGate(NOT_GATE_IMAGE, "NOTGate")
+    nandGate = NANDGate(NAND_GATE_IMAGE, "NANDGate")
+    norGate = NORGate(NOR_GATE_IMAGE, "NORGate")
+    xorGate = XORGate(XOR_GATE_IMAGE, "XORGate")
     
     # Creates instances of gates that will replace ones that are dragged
-    andGateOriginal = ANDGate(AND_GATE_IMAGE)
-    orGateOriginal = ORGate(OR_GATE_IMAGE)
-    notGateOriginal = NOTGate(NOT_GATE_IMAGE)
-    nandGateOriginal = NANDGate(NAND_GATE_IMAGE)
-    norGateOriginal = NORGate(NOR_GATE_IMAGE)
-    xorGateOriginal = XORGate(XOR_GATE_IMAGE)
+    andGateOriginal = ANDGate(AND_GATE_IMAGE, "ANDGate")
+    orGateOriginal = ORGate(OR_GATE_IMAGE, "ORGate")
+    notGateOriginal = NOTGate(NOT_GATE_IMAGE, "NOTGate")
+    nandGateOriginal = NANDGate(NAND_GATE_IMAGE, "NANDGate")
+    norGateOriginal = NORGate(NOR_GATE_IMAGE, "NORGate")
+    xorGateOriginal = XORGate(XOR_GATE_IMAGE, "XORGate")
 
-    classDict = {andGateOriginal : "ANDGate", orGateOriginal : "ORGate", notGateOriginal : "NOTGate", 
-                   nandGateOriginal : "NANDGate", norGateOriginal : "NORGate", xorGateOriginal : "XORGate"}
+    classDict = {"ANDGate" : ANDGate, "ORGate" : ORGate, "NOTGate" : NOTGate, 
+                 "NANDGate" : NANDGate, "NORGate" : NORGate, "XORGate" : XORGate}
     
     imageDict = {"ANDGate" : AND_GATE_IMAGE, "ORGate" :  OR_GATE_IMAGE, "NOTGate" : NOT_GATE_IMAGE,
                   "NANDGate" : NAND_GATE_IMAGE, "NORGate" : NOR_GATE_IMAGE, "XORGate" : XOR_GATE_IMAGE}
@@ -95,6 +92,9 @@ def main():
 
     sidebarList = [andGateOriginal, orGateOriginal, notGateOriginal, 
                    nandGateOriginal, norGateOriginal, xorGateOriginal]
+    
+    draggedList = []
+
     # Adds all logic gate instances to the sprite group
     
     for component in componentList:
@@ -105,8 +105,6 @@ def main():
 
     # Draws the sprites onto the screen
     sidebarSprites.draw(SCREEN)
-
-    run = True
 
     # Main game loop
     while game.run == True:
