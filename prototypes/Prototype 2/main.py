@@ -48,16 +48,17 @@ def dragAndDrop(logicGateSprites, mouse, classDict, imageDict):
                 image = imageDict[component.name]
                 newClass = classDict[component.name]
                 newInstance = newClass(image, component.name)
-                print(newInstance)
+                
+                placedSprites.add(newInstance)
                 # Makes sure that only 1 component can be dragged at a time
                 if len(draggedGroup.sprites()) == 0:
-                    draggedGroup.add(component)
+                    draggedGroup.add(newInstance)
                 else:
                     draggedGroup.empty()
-                    draggedGroup.add(component)
+                    draggedGroup.add(newInstance)
         # Updates the position of the dragged component to the mouse position
         draggedGroup.sprites()[0].rect.center = mouse.xPos, mouse.yPos
-        placedSprites.add(draggedGroup.sprites()[0])
+        
         print(placedSprites.sprites())
 
 def main():
