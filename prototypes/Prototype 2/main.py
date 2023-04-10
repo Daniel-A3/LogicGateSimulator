@@ -37,29 +37,36 @@ sidebarSprites = pygame.sprite.Group()
 # a new instance of the same component is dragged.
 placedSprites = pygame.sprite.Group()
 
+dragging = False
+
 # DRAG AND DROP FUNCTION
 # --------------------------------------------------------------------------------------------
-def dragAndDrop(logicGateSprites, mouse, classDict, imageDict):
+def dragAndDrop(logicGateSprites, mouse, classDict, imageDict, dragging):
 
     if pygame.mouse.get_pressed()[0]:
         # Checks if any of the components were clicked
         for component in logicGateSprites:
-            if component.rect.collidepoint(mouse.xPos, mouse.yPos):
-                image = imageDict[component.name]
-                newClass = classDict[component.name]
-                newInstance = newClass(image, component.name)
-                
-                placedSprites.add(newInstance)
-                # Makes sure that only 1 component can be dragged at a time
-                if len(draggedGroup.sprites()) == 0:
-                    draggedGroup.add(newInstance)
-                else:
-                    draggedGroup.empty()
-                    draggedGroup.add(newInstance)
+            if dragging == False:
+                if component.rect.collidepoint(mouse.xPos, mouse.yPos):
+                    dragging = True
+
+                    image = imageDict[component.name]
+                    newClass = classDict[component.name]
+                    newInstance = newClass(image, component.name)
+                    
+                    placedSprites.add(newInstance)
+                    # Makes sure that only 1 component can be dragged at a time
+                    if len(draggedGroup.sprites()) == 0:
+                        draggedGroup.add(newInstance)
+                    else:
+                        draggedGroup.empty()
+                        draggedGroup.add(newInstance)
         # Updates the position of the dragged component to the mouse position
         draggedGroup.sprites()[0].rect.center = mouse.xPos, mouse.yPos
         
         print(placedSprites.sprites())
+    else:
+        dragging = False
 
 def main():
     # Creates an instance of the Game class - represents the current game running
@@ -102,9 +109,6 @@ def main():
     for component in sidebarList:
         sidebarSprites.add(component)
 
-    # Draws the sprites onto the screen
-    sidebarSprites.draw(SCREEN)
-
     # Main game loop
     while game.run == True:
         # Checks if the program was quit
@@ -117,7 +121,7 @@ def main():
         # Runs the drag and drop function
         # Allows the user to drag gates from the sidebar menu and drop 
         # them onto the workspace.
-        dragAndDrop(logicGateSprites, mouse, classDict, imageDict)
+        dragAndDrop(logicGateSprites, mouse, classDict, imageDict, dragging)
         # Regenerate all components in the sidebar menu.
         # This is so that if they are drag and dropped, a new instance appears
         # in its original place.
