@@ -2,6 +2,8 @@
 # --------------------------------------------------------------------------------------------
 import pygame
 
+pygame.init()
+
 class MouseCursor(pygame.sprite.Sprite):
     carryList = []
 

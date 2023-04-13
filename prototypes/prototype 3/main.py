@@ -1,3 +1,5 @@
+# PROTOTYPE 3 OF THE LOGIC GATE SIMULATOR
+
 import pygame, os
 from MouseCursor import MouseCursor
 from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate
@@ -19,17 +21,15 @@ SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 BACKGROUND = pygame.image.load(os.path.join("Assets", "backgroundGrid.png"))
 
 # Loads all of the images
-AND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ANDGate.png"))
-OR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ORGate.png"))
-NOT_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NOTGate.png"))
-NAND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NANDGate.png"))
-NOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NORGate.png"))
-XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png"))
+AND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ANDGate.png")).convert_alpha()
+OR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ORGate.png")).convert_alpha()
+NOT_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NOTGate.png")).convert_alpha()
+NAND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NANDGate.png")).convert_alpha()
+NOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NORGate.png")).convert_alpha()
+XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png")).convert_alpha()
 
 logicGateSprites = pygame.sprite.Group()
 sidebarSprites = pygame.sprite.Group()
-
-dragging = False
 
 # SIDEBAR MENU CLASS
 # --------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ class SidebarMenu():
         xorGate = XORGate(XOR_GATE_IMAGE, "XORGate", 128, 350)
 
         componentList = [andGate, orGate, notGate, nandGate, norGate, xorGate]
-
+        # Adds the newly instantiated components to their respective sprite groups
         for component in componentList:
             sidebarSprites.add(component)
             logicGateSprites.add(component)
@@ -68,13 +68,14 @@ def main():
         mouse.update()
 
         for event in pygame.event.get():
+            # Checks if pygame was quit
             if event.type == pygame.QUIT:
                 run = False
-    
+            # Checks if the mouse button is pressed
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Adds all collided sprites to the carryList
                 mouse.carryList = pygame.sprite.spritecollide(mouse, logicGateSprites, False)
-    
+            # Checks if the mouse button was released
             elif event.type == pygame.MOUSEBUTTONUP:
                 # When you let go off clicking the mouse the carryList is emptied
                 mouse.carryList = []

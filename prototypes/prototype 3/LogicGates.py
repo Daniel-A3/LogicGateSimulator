@@ -2,6 +2,8 @@
 # --------------------------------------------------------------------------------------------
 import pygame
 
+pygame.init()
+
 # Superclass for all logic gates
 class LogicGate(pygame.sprite.Sprite):
     def __init__(self, image, name, x, y):
