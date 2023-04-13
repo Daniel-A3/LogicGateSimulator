@@ -9,7 +9,6 @@ pygame.init()
 
 spriteGroup = pygame.sprite.Group()
 sidebarSprites = pygame.sprite.Group()
-placedSprites = pygame.sprite.Group()
 
 # Set the height and width of the screen
 WIDTH, HEIGHT = 1332, 802
