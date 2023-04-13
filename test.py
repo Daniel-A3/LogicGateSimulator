@@ -10,37 +10,39 @@ clock = pygame.time.Clock()
 WIDTH, HEIGHT = 1332, 802
 SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 
-def dragAndDrop():
-    pass
-
 allSprites = pygame.sprite.Group()
-sidebarSprites = pygame.sprite.Group()
 
 class Rectangle(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface([128,64])
-        self.image.fill([128,128,128])
+        self.image = pygame.Surface([80, 60])
+        self.image.fill([100, 100, 100])
         self.rect = self.image.get_rect()
 
-run = True
-# Main game loop
-while run == True:
-    # Checks if the game was quit
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-    # Draws the screen every game loop
-    SCREEN.fill((255, 255, 255))
+def main():
+    run = True
 
     rec1 = Rectangle()
     rec2 = Rectangle()
     rec3 = Rectangle()
 
-    sidebarSprites.add(rec1)
-    sidebarSprites.add(rec2)
-    sidebarSprites.add(rec3)
+    allSprites.add(rec1)
+    allSprites.add(rec2)
+    allSprites.add(rec3)
+    
+    # Main game loop
+    while run:
+        # Checks if the game was quit
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+        # Draws the screen every game loop
+        SCREEN.fill((255, 255, 255))
 
-    sidebarSprites.draw(SCREEN)
+        allSprites.draw(SCREEN)
 
-    dragAndDrop()
+        pygame.display.update()
+
+    pygame.quit()
+
+main()

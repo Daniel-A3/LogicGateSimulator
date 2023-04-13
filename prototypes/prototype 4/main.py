@@ -31,6 +31,9 @@ XOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("As
 
 logicGateSprites = pygame.sprite.Group()
 sidebarSprites = pygame.sprite.Group()
+
+allSocketSprites = pygame.sprite.Group()
+
 allWireSprites = pygame.sprite.Group()
 
 # SIDEBAR MENU CLASS
@@ -111,6 +114,14 @@ def main():
 
         #newWire = Wire((400,100), (800,200))
         #newWire.draw(SCREEN)
+        for component in logicGateSprites:
+            for input in component.inputList:
+                input.update()
+        
+        test = Socket(500, 100, 15, 15, "ANDGate", True)
+
+        allSocketSprites.add(test)
+        allSocketSprites.draw(SCREEN)
 
         # Update the display
         pygame.display.flip()
