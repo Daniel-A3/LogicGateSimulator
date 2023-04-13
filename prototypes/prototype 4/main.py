@@ -2,7 +2,7 @@
 
 import pygame, os
 from MouseCursor import MouseCursor
-from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate
+from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate, Socket
 
 #General setup
 pygame.init()
@@ -20,20 +20,22 @@ SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 # Loads the background
 BACKGROUND = pygame.image.load(os.path.join("Assets", "backgroundGrid.png"))
 
-# Loads all of the images
-AND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ANDGate.png")).convert_alpha()
-OR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "ORGate.png")).convert_alpha()
-NOT_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NOTGate.png")).convert_alpha()
-NAND_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NANDGate.png")).convert_alpha()
-NOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "NORGate.png")).convert_alpha()
-XOR_GATE_IMAGE = pygame.image.load(os.path.join("Assets", "XORGate.png")).convert_alpha()
+# Loads each logic gate image, then uses a smoothscale algorithm to transform its size
+# This is so that all of the images are the same and right size, while also retaining its image quality.
+AND_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "ANDGate.png")).convert_alpha(), (128, 64))
+OR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "ORGate.png")).convert_alpha(), (128, 64))
+NOT_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "NOTGate.png")).convert_alpha(), (128, 64))
+NAND_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "NANDGate.png")).convert_alpha(), (128, 64))
+NOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "NORGate.png")).convert_alpha(), (128, 64))
+XOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "XORGate.png")).convert_alpha(), (128, 64))
 
 logicGateSprites = pygame.sprite.Group()
 sidebarSprites = pygame.sprite.Group()
+allWireSprites = pygame.sprite.Group()
 
 # SIDEBAR MENU CLASS
 # --------------------------------------------------------------------------------------------
-class SidebarMenu():
+class SidebarMenu:
     def __init__(self):
         self.border = 256
 
@@ -54,6 +56,17 @@ class SidebarMenu():
 
         sidebarSprites.draw(SCREEN)
 
+class Wire(pygame.sprite.Sprite):
+    def __init__(self, start, end):
+        pygame.sprite.Sprite.__init__(self)
+        self.start = start
+        self.end = end
+        self.color = (0, 0, 0)
+        self.width = 4
+
+    def draw(self, screen):
+        pygame.draw.line(screen, self.color, self.start, self.end, self.width)
+
 def main():
     run = True
     # Creates an instance of the sidebarMenu class
@@ -68,17 +81,21 @@ def main():
         mouse.update()
 
         for event in pygame.event.get():
+
             # Checks if pygame was quit
             if event.type == pygame.QUIT:
                 run = False
+
             # Checks if the mouse button is pressed
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Adds all collided sprites to the carryList
                 mouse.carryList = pygame.sprite.spritecollide(mouse, logicGateSprites, False)
+
             # Checks if the mouse button was released
             elif event.type == pygame.MOUSEBUTTONUP:
                 # When you let go off clicking the mouse the carryList is emptied
                 mouse.carryList = []
+
         
         # Fills the screen with the colour white
         SCREEN.fill((255, 255, 255))
@@ -92,6 +109,9 @@ def main():
         # Draws all the other gates that have been dragged onto the workspace
         logicGateSprites.draw(SCREEN)
 
+        #newWire = Wire((400,100), (800,200))
+        #newWire.draw(SCREEN)
+
         # Update the display
         pygame.display.flip()
         clock.tick(60)
@@ -100,78 +120,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-"""
-# Sprites for all logic gate components stored in this group
-logicGateSprites = pygame.sprite.Group()
-# Sprites that are drag and dropped onto the workspace join this group
-draggedGroup = pygame.sprite.Group()
-# Creates a new copy of the sprites each time one is dragged away from the sidebar menu
-sidebarSprites = pygame.sprite.Group()
-# Makes sure the sprites that were drag and dropped before are not deleted when
-# a new instance of the same component is dragged.
-placedSprites = pygame.sprite.Group()
-"""
-"""
-def dragAndDrop(logicGateSprites, mouse, classDict, imageDict, dragging):
-
-    if pygame.mouse.get_pressed()[0]:
-        # Checks if any of the components were clicked
-        for component in logicGateSprites:
-            if dragging == False:
-                if component.rect.collidepoint(mouse.xPos, mouse.yPos):
-                    dragging = True
-
-                    image = imageDict[component.name]
-                    newClass = classDict[component.name]
-                    newInstance = newClass(image, component.name)
-                    
-                    placedSprites.add(newInstance)
-                    # Makes sure that only 1 component can be dragged at a time
-                    if len(draggedGroup.sprites()) == 0:
-                        draggedGroup.add(newInstance)
-                    else:
-                        draggedGroup.empty()
-                        draggedGroup.add(newInstance)
-        # Updates the position of the dragged component to the mouse position
-        draggedGroup.sprites()[0].rect.center = mouse.xPos, mouse.yPos
-        
-        print(placedSprites.sprites())
-    else:
-        dragging = False
-"""
-"""
-    # Creates an instance of all logic gates
-    andGate = ANDGate(AND_GATE_IMAGE, "ANDGate")
-    orGate = ORGate(OR_GATE_IMAGE, "ORGate")
-    notGate = NOTGate(NOT_GATE_IMAGE, "NOTGate")
-    nandGate = NANDGate(NAND_GATE_IMAGE, "NANDGate")
-    norGate = NORGate(NOR_GATE_IMAGE, "NORGate")
-    xorGate = XORGate(XOR_GATE_IMAGE, "XORGate")
-    
-    # Creates instances of gates that will replace ones that are dragged
-    andGateOriginal = ANDGate(AND_GATE_IMAGE, "ANDGate")
-    orGateOriginal = ORGate(OR_GATE_IMAGE, "ORGate")
-    notGateOriginal = NOTGate(NOT_GATE_IMAGE, "NOTGate")
-    nandGateOriginal = NANDGate(NAND_GATE_IMAGE, "NANDGate")
-    norGateOriginal = NORGate(NOR_GATE_IMAGE, "NORGate")
-    xorGateOriginal = XORGate(XOR_GATE_IMAGE, "XORGate")
-    
-
-    classDict = {"ANDGate" : ANDGate, "ORGate" : ORGate, "NOTGate" : NOTGate, 
-                 "NANDGate" : NANDGate, "NORGate" : NORGate, "XORGate" : XORGate}
-    
-    imageDict = {"ANDGate" : AND_GATE_IMAGE, "ORGate" :  OR_GATE_IMAGE, "NOTGate" : NOT_GATE_IMAGE,
-                  "NANDGate" : NAND_GATE_IMAGE, "NORGate" : NOR_GATE_IMAGE, "XORGate" : XOR_GATE_IMAGE}
-
-    sidebarList = [andGateOriginal, orGateOriginal, notGateOriginal, 
-                   nandGateOriginal, norGateOriginal, xorGateOriginal]
-
-    # Adds all logic gate instances to the sprite group
-    
-    for component in componentList:
-        logicGateSprites.add(component)
-    
-    for component in sidebarList:
-        sidebarSprites.add(component)
-    """

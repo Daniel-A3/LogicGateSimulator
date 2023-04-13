@@ -16,9 +16,16 @@ class MouseCursor(pygame.sprite.Sprite):
     def update(self):
         # x and y position of the mouse cursor
         self.xPos, self.yPos = pygame.mouse.get_pos()
-        self.rect.center = self.xPos, self.yPos
 
-        for block in self.carryList:
-            block.rect.center = self.rect.center
+        # Finds the offset of how much the mouse was moved
+        offsetX = self.rect.x - self.xPos
+        offsetY = self.rect.y - self.yPos
+
+        for component in self.carryList:
+            component.rect.x -= offsetX
+            component.rect.y -= offsetY
+            #component.rect.center = self.rect.center
             # This break is necessary so that you can only pick up one component at a time.
             break
+
+        self.rect.x, self.rect.y = self.xPos, self.yPos
