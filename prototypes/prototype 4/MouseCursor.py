@@ -24,7 +24,6 @@ class MouseCursor(pygame.sprite.Sprite):
         for component in self.carryList:
             component.rect.x -= offsetX
             component.rect.y -= offsetY
-            #component.rect.center = self.rect.center
             # This break is necessary so that you can only pick up one component at a time.
             break
 

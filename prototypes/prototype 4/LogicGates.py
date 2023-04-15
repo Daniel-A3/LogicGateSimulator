@@ -16,14 +16,12 @@ class Socket(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+
         self.gate = gate
         self.isInput = isInput
 
         self.isConnected = False
         self.connectedWire = None
-
-    def update(self):
-        pygame.draw.rect(self.image, (255, 255, 255), [0, 0, self.rect.width, self.rect.height])
 
     def connect_wire(self, wire):
         # connect wire to the socket
@@ -42,8 +40,8 @@ class LogicGate(pygame.sprite.Sprite):
         self.rect.y = y
         self.name = name
 
-        if name == "NOTGate":
-            self.input = Socket(x, y, 20, 20, name, True)
+        if self.name == "NOTGate":
+            self.input = Socket(self.rect.x, self.rect.y, 20, 20, name, True)
             self.inputList = [self.input]
         else:
             self.inputA = Socket(x, y, 20, 20, name, True)

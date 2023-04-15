@@ -29,7 +29,7 @@ NAND_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("A
 NOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "NORGate.png")).convert_alpha(), (128, 64))
 XOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "XORGate.png")).convert_alpha(), (128, 64))
 
-logicGateSprites = pygame.sprite.Group()
+
 sidebarSprites = pygame.sprite.Group()
 
 allSocketSprites = pygame.sprite.Group()
@@ -55,7 +55,8 @@ class SidebarMenu:
         # Adds the newly instantiated components to their respective sprite groups
         for component in componentList:
             sidebarSprites.add(component)
-            logicGateSprites.add(component)
+            for input in component.inputList:
+                allSocketSprites.add(input)
 
         sidebarSprites.draw(SCREEN)
 
@@ -79,9 +80,6 @@ def main():
     
     # Main game loop
     while run == True:
-        # Checks if the program was quit
-        
-        mouse.update()
 
         for event in pygame.event.get():
 
@@ -92,14 +90,15 @@ def main():
             # Checks if the mouse button is pressed
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Adds all collided sprites to the carryList
-                mouse.carryList = pygame.sprite.spritecollide(mouse, logicGateSprites, False)
+                mouse.carryList = pygame.sprite.spritecollide(mouse, sidebarSprites, False)
+                # CHECK IF SOCKET SPRITE COLLIDE, IF TRUE ADD TO SOCKETLIST
 
             # Checks if the mouse button was released
             elif event.type == pygame.MOUSEBUTTONUP:
                 # When you let go off clicking the mouse the carryList is emptied
                 mouse.carryList = []
 
-        
+        mouse.update()
         # Fills the screen with the colour white
         SCREEN.fill((255, 255, 255))
         # Draws the background onto the screen
@@ -109,19 +108,15 @@ def main():
         # This is so that if they are drag and dropped, a new instance appears
         # in its original place.
         sidebar.drawSprites()
-        # Draws all the other gates that have been dragged onto the workspace
-        logicGateSprites.draw(SCREEN)
 
         #newWire = Wire((400,100), (800,200))
         #newWire.draw(SCREEN)
-        for component in logicGateSprites:
-            for input in component.inputList:
-                input.update()
         
         test = Socket(500, 100, 15, 15, "ANDGate", True)
 
-        allSocketSprites.add(test)
-        allSocketSprites.draw(SCREEN)
+        
+        #allSocketSprites.add(test)
+        #allSocketSprites.draw(SCREEN)
 
         # Update the display
         pygame.display.flip()
