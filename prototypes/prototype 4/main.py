@@ -82,6 +82,7 @@ def main():
 
             # Checks if the mouse button is pressed
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse.connectedSocket = []
                 # Adds all collided sprites to the carryList
                 mouse.carryList = pygame.sprite.spritecollide(mouse, sidebarSprites, False)
                 # Check if any socket sprites collide with mouse position, if true then add to socketList
@@ -89,20 +90,24 @@ def main():
     
             # Checks if the mouse button was released
             elif event.type == pygame.MOUSEBUTTONUP:
+                # Lets the user connect a wire coming out of one socket to another socket
+                mouse.connectedSocket = pygame.sprite.spritecollide(mouse, allSocketSprites, False)
+                print(mouse.connectedSocket)
                 # When you let go off clicking the mouse the carryList is emptied
                 mouse.carryList = []
                 mouse.socketList = []
 
-        mouse.update()
         # Fills the screen with the colour white
         SCREEN.fill((255, 255, 255))
         # Draws the background onto the screen
         SCREEN.blit(BACKGROUND, (256,0))
-        
+    
         # Regenerate all components in the sidebar menu.
         # This is so that if they are drag and dropped, a new instance appears
         # in its original place.
         sidebar.drawSprites()
+
+        mouse.update()
 
         # Update the display
         pygame.display.flip()

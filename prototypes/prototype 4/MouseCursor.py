@@ -30,9 +30,6 @@ class MouseCursor(pygame.sprite.Sprite):
         # x and y position of the mouse cursor
         self.xPos, self.yPos = pygame.mouse.get_pos()
 
-        newWire = Wire((400,100), (800,200))
-        newWire.draw(self.screen)
-
         # Finds the offset of how much the mouse was moved
         offsetX = self.rect.x - self.xPos
         offsetY = self.rect.y - self.yPos
@@ -61,15 +58,9 @@ class MouseCursor(pygame.sprite.Sprite):
         else:
             # Drag and dropping, and connecting new wires
             for socket in self.socketList:
-
-                socket.connectedWire = Wire([socket.rect.x, socket.rect.y], [socket.rect.x - offsetX, socket.rect.y - offsetY])
-                    
-                socket.isConnected = True
-                print("test")
-                # TEST
-                newWire = Wire((400,100), (800,200))
-                newWire.draw(self.screen)
-
+                # Creates a wire and sets the end of the wire to the mouse position
+                socket.connectedWire = Wire([socket.rect.x + 8, socket.rect.y + 8], [self.xPos, self.yPos])
+                # Draws the wire
                 socket.connectedWire.draw(self.screen)
                 # This break is necessary so that you can only pick up one component at a time.
                 break
