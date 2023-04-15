@@ -55,28 +55,21 @@ class SidebarMenu:
         # Adds the newly instantiated components to their respective sprite groups
         for component in componentList:
             sidebarSprites.add(component)
+            allSocketSprites.add(component.output)
+            # Input list is required so that both NOT gate and other gates sockets can be drawn at once.
+            # This is because NOT gate only requires one input socket while the others require two.
             for input in component.inputList:
                 allSocketSprites.add(input)
 
         sidebarSprites.draw(SCREEN)
-
-class Wire(pygame.sprite.Sprite):
-    def __init__(self, start, end):
-        pygame.sprite.Sprite.__init__(self)
-        self.start = start
-        self.end = end
-        self.color = (0, 0, 0)
-        self.width = 4
-
-    def draw(self, screen):
-        pygame.draw.line(screen, self.color, self.start, self.end, self.width)
+        allSocketSprites.draw(SCREEN)
 
 def main():
     run = True
     # Creates an instance of the sidebarMenu class
     sidebar = SidebarMenu()
     # Creates an instance of the MouseCursor class - represents the users mouse
-    mouse = MouseCursor()
+    mouse = MouseCursor(SCREEN)
     
     # Main game loop
     while run == True:
@@ -91,12 +84,14 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Adds all collided sprites to the carryList
                 mouse.carryList = pygame.sprite.spritecollide(mouse, sidebarSprites, False)
-                # CHECK IF SOCKET SPRITE COLLIDE, IF TRUE ADD TO SOCKETLIST
-
+                # Check if any socket sprites collide with mouse position, if true then add to socketList
+                mouse.socketList = pygame.sprite.spritecollide(mouse, allSocketSprites, False)
+    
             # Checks if the mouse button was released
             elif event.type == pygame.MOUSEBUTTONUP:
                 # When you let go off clicking the mouse the carryList is emptied
                 mouse.carryList = []
+                mouse.socketList = []
 
         mouse.update()
         # Fills the screen with the colour white
@@ -108,15 +103,6 @@ def main():
         # This is so that if they are drag and dropped, a new instance appears
         # in its original place.
         sidebar.drawSprites()
-
-        #newWire = Wire((400,100), (800,200))
-        #newWire.draw(SCREEN)
-        
-        test = Socket(500, 100, 15, 15, "ANDGate", True)
-
-        
-        #allSocketSprites.add(test)
-        #allSocketSprites.draw(SCREEN)
 
         # Update the display
         pygame.display.flip()

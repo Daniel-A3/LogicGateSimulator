@@ -41,14 +41,14 @@ class LogicGate(pygame.sprite.Sprite):
         self.name = name
 
         if self.name == "NOTGate":
-            self.input = Socket(self.rect.x, self.rect.y, 20, 20, name, True)
+            self.input = Socket(x, (y + 25), 15, 15, name, True)
             self.inputList = [self.input]
         else:
-            self.inputA = Socket(x, y, 20, 20, name, True)
-            self.inputB = Socket(x, y, 20, 20, name, True)
+            self.inputA = Socket(x, (y + 11), 15, 15, name, True)
+            self.inputB = Socket(x, (y + 38), 15, 15, name, True)
             self.inputList = [self.inputA, self.inputB]
         
-        self.output = Socket((self.rect.x + 108), (self.rect.x + 15), 20, 20, name, False)
+        self.output = Socket((x + 108), (y + 25), 15, 15, name, False)
 
 class ANDGate(LogicGate):
     def __init__(self, image, name, x, y):
