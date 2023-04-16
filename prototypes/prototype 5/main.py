@@ -127,12 +127,12 @@ class MouseCursor(pygame.sprite.Sprite):
                     input.rect.x -= offsetX
                     input.rect.y -= offsetY
 
-                #
+                # Moves any wires connected to the components input sockets with the component when dragged.
                 for inputSocket in component.inputList:
                     if inputSocket.connected:
                         inputSocket.inputWire.end[0] -= offsetX
                         inputSocket.inputWire.end[1] -= offsetY
-                
+                # Moves any wires connected to the components output socket with the component when dragged.
                 if component.output.connected:
                     component.output.outputWire.start[0] -= offsetX
                     component.output.outputWire.start[1] -= offsetY
