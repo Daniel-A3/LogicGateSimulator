@@ -29,7 +29,7 @@ class Socket(pygame.sprite.Sprite):
         self.connected = False
 
         self.inputWire = None
-        self.outputWire = None
+        self.outputWires = []
 
 
 # LOGIC GATE CLASS
@@ -79,3 +79,35 @@ class NORGate(LogicGate):
 class XORGate(LogicGate):
     def __init__(self, image, name, x, y):
         super().__init__(image, name, x, y)
+
+
+# SWITCH CLASS
+# --------------------------------------------------------------------------------------------
+# Represents the switch that turns current on or off to the logic circuit
+
+class Switch(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, name, current):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.name = name
+        self.current = current
+
+        self.output = Socket((x + 84), (y + 15), 15, 15, self, False)
+
+# LIGHT BULB CLASS
+# --------------------------------------------------------------------------------------------
+# Represents the wires that connect different logic gate components together
+class Bulb(pygame.sprite.Sprite):
+    def __init__(self, image, x, y, name, current):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.name = name
+        self.current = current
+
+        self.input = Socket((x + 31), (y + 56), 15, 15, self, True)

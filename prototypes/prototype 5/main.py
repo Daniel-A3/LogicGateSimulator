@@ -3,7 +3,7 @@
 # ADDS THE SWITCH AND LIGHT BULB COMPONENTS, AND MOST OF ALL IMPLEMENTS THE ACTUAL LOGIC BEHING THE LOGIC GATES.
 
 import pygame, os
-from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate
+from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate, Switch, Bulb
 
 # General setup
 pygame.init()
@@ -34,8 +34,8 @@ XOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("As
 ON_SWITCH_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "onSwitch.png")).convert_alpha(), (90, 45))
 OFF_SWITCH_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "offSwitch.png")).convert_alpha(), (90, 45))
 
-ON_BULB_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "onBulb.png")).convert_alpha(), (90, 90))
-OFF_BULB_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "offBulb.png")).convert_alpha(), (90, 90))
+ON_BULB_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "onBulb.png")).convert_alpha(), (75, 75))
+OFF_BULB_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "offBulb.png")).convert_alpha(), (75, 75))
 
 INFORMATION_MENU_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "informationMenu.png")).convert_alpha(), (90,90))
 INFORMATION_MENU_HOVER_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "informationMenuOnHover.png")).convert_alpha(), (90,90))
@@ -133,12 +133,15 @@ class MouseCursor(pygame.sprite.Sprite):
             
             elif validConnection:
 
-                self.sourceSocket.outputWire = Wire([self.sourceSocket.rect.x + 8, self.sourceSocket.rect.y + 8], [self.xPos, self.yPos])
+                wire = Wire([self.sourceSocket.rect.x + 8, self.sourceSocket.rect.y + 8], [self.xPos, self.yPos])
+                self.sourceSocket.outputWires.append(wire)
                 self.sourceSocket.connected = True
-                allWireSprites.add(self.sourceSocket.outputWire)
+
+                for wire in self.sourceSocket.outputWires:
+                    allWireSprites.add(wire)
 
                 for endSocket in self.endSocketList:
-                    endSocket.inputWire = self.sourceSocket.outputWire
+                    endSocket.inputWire = self.sourceSocket.outputWires[-1]
                     endSocket.connected = True
                     # This break is necessary so that you can only create one input wire at a time.
                     break
@@ -155,23 +158,48 @@ class MouseCursor(pygame.sprite.Sprite):
                 component.rect.x -= offsetX
                 component.rect.y -= offsetY
 
-                # Moves the socket outputs with the mouse
-                component.output.rect.x -= offsetX
-                component.output.rect.y -= offsetY
-                # Moves the socket inputs with the mouse
-                for input in component.inputList:
-                    input.rect.x -= offsetX
-                    input.rect.y -= offsetY
+                # Switch and bulb have different socket structure
+                if component.name == "switch":
+                    # Moves the socket outputs with the mouse
+                    component.output.rect.x -= offsetX
+                    component.output.rect.y -= offsetY
 
-                # Moves any wires connected to the components input sockets with the component when dragged.
-                for inputSocket in component.inputList:
-                    if inputSocket.connected:
-                        inputSocket.inputWire.end[0] -= offsetX
-                        inputSocket.inputWire.end[1] -= offsetY
-                # Moves any wires connected to the components output socket with the component when dragged.
-                if component.output.connected:
-                    component.output.outputWire.start[0] -= offsetX
-                    component.output.outputWire.start[1] -= offsetY
+                    # Moves any wires connected to the components output socket with the component when dragged.
+                    if component.output.connected:
+                        for wire in component.output.outputWires:
+                            wire.start[0] -= offsetX
+                            wire.start[1] -= offsetY
+
+                elif component.name == "bulb":
+                    # Moves the socket inputs with the mouse
+                    component.input.rect.x -= offsetX
+                    component.input.rect.y -= offsetY
+
+                    # Moves any wires connected to the components input sockets with the component when dragged.
+                    if component.input.connected:
+                        component.input.inputWire.end[0] -= offsetX
+                        component.input.inputWire.end[1] -= offsetY
+
+                else:
+                    # Moves the socket outputs with the mouse
+                    component.output.rect.x -= offsetX
+                    component.output.rect.y -= offsetY
+                    # Moves the socket inputs with the mouse
+                    for input in component.inputList:
+                        input.rect.x -= offsetX
+                        input.rect.y -= offsetY
+
+                    # Moves any wires connected to the components input sockets with the component when dragged.
+                    for inputSocket in component.inputList:
+                        if inputSocket.connected:
+                            inputSocket.inputWire.end[0] -= offsetX
+                            inputSocket.inputWire.end[1] -= offsetY
+                    # Moves any wires connected to the components output socket with the component when dragged.
+                    if component.output.connected:
+                        for wire in component.output.outputWires:
+                            wire.start[0] -= offsetX
+                            wire.start[1] -= offsetY
+                    
                     
                 # This break is necessary so that you can only pick up one component at a time.
                 break
@@ -198,15 +226,24 @@ class SidebarMenu:
         norGate = NORGate(NOR_GATE_IMAGE, "NORGate", 0, 380)
         xorGate = XORGate(XOR_GATE_IMAGE, "XORGate", 128, 380)
 
-        componentList = [andGate, orGate, notGate, nandGate, norGate, xorGate]
+        switch = Switch(OFF_SWITCH_IMAGE, 15, 480, "switch", False)
+        bulb = Bulb(OFF_BULB_IMAGE, 143, 460, "bulb", False)
+
+        componentList = [andGate, orGate, notGate, nandGate, norGate, xorGate, switch, bulb]
         # Adds the newly instantiated components to their respective sprite groups
         for component in componentList:
             sidebarSprites.add(component)
-            allSocketSprites.add(component.output)
-            # Input list is required so that both NOT gate and other gates sockets can be drawn at once.
-            # This is because NOT gate only requires one input socket while the others require two.
-            for input in component.inputList:
-                allSocketSprites.add(input)
+    
+            if component.name == "switch":
+                allSocketSprites.add(component.output)
+            elif component.name == "bulb":
+                allSocketSprites.add(component.input)
+            else:
+                allSocketSprites.add(component.output)
+                # Input list is required so that both NOT gate and other gates sockets can be drawn at once.
+                # This is because NOT gate only requires one input socket while the others require two.
+                for input in component.inputList:
+                    allSocketSprites.add(input)
 
     def drawSprites(self):
         # Draws all of the logic gates
@@ -272,21 +309,13 @@ def main():
             # the performance impact.
             sidebar.dragging = False
 
+        SCREEN.blit(LOGO_IMAGE,(0, 0))
         # Draws the logic gates, sockets and wires.
         sidebar.drawSprites()
 
         # Updates the mouse objects position, as well as any dragged logic gate components and their 
         # respective sockets and connected wires.
         mouse.update()
-
-        SCREEN.blit(ON_SWITCH_IMAGE,(500, 100))
-        SCREEN.blit(OFF_SWITCH_IMAGE,(500, 150))
-        SCREEN.blit(ON_BULB_IMAGE,(500, 200))
-        SCREEN.blit(OFF_BULB_IMAGE,(500, 300))
-        SCREEN.blit(INFORMATION_MENU_IMAGE,(500, 400))
-        SCREEN.blit(INFORMATION_MENU_HOVER_IMAGE,(500, 500))
-
-        SCREEN.blit(LOGO_IMAGE,(0, 0))
 
         # Update the display
         pygame.display.flip()
