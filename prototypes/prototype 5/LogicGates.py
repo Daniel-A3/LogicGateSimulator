@@ -1,10 +1,17 @@
-# ALL CLASSES FOR LOGIC GATES
+# LOGIC GATE MODULE
 # --------------------------------------------------------------------------------------------
+# This module contains the Socket class and logic gate classes for all different types, 
+# as well as the LogicGate superclass.
 import pygame
 
 pygame.init()
 
-# Socket Class for connecting components
+
+# SOCKET CLASS
+# --------------------------------------------------------------------------------------------
+# Represents sockets, the input and outputs of components. This allows connectivity.
+# Each logic gate has input socket/s, and an output socket, each can be connected to a wire
+# object of the Wire Class.
 class Socket(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height, gate, isInput):
         super().__init__()
@@ -24,7 +31,11 @@ class Socket(pygame.sprite.Sprite):
         self.inputWire = None
         self.outputWire = None
 
-# Superclass for all logic gates
+
+# LOGIC GATE CLASS
+# --------------------------------------------------------------------------------------------
+# Superclass for all types of logic gates.
+# Defines its x and y position, as well as input and output sockets.
 class LogicGate(pygame.sprite.Sprite):
     def __init__(self, image, name, x, y):
         # Inherits from the sprite class
@@ -36,14 +47,14 @@ class LogicGate(pygame.sprite.Sprite):
         self.name = name
 
         if self.name == "NOTGate":
-            self.input = Socket(x, (y + 25), 15, 15, name, True)
+            self.input = Socket(x, (y + 25), 15, 15, self, True)
             self.inputList = [self.input]
         else:
-            self.inputA = Socket(x, (y + 11), 15, 15, name, True)
-            self.inputB = Socket(x, (y + 38), 15, 15, name, True)
+            self.inputA = Socket(x, (y + 11), 15, 15, self, True)
+            self.inputB = Socket(x, (y + 38), 15, 15, self, True)
             self.inputList = [self.inputA, self.inputB]
         
-        self.output = Socket((x + 108), (y + 25), 15, 15, name, False)
+        self.output = Socket((x + 108), (y + 25), 15, 15, self, False)
 
 class ANDGate(LogicGate):
     def __init__(self, image, name, x, y):
@@ -68,20 +79,3 @@ class NORGate(LogicGate):
 class XORGate(LogicGate):
     def __init__(self, image, name, x, y):
         super().__init__(image, name, x, y)
-
-"""
-# Binary gates have two inputs
-class BinaryGate(LogicGate):
-    def __init__(self, image, name, x, y):
-        LogicGate.__init__(self, image, name, x, y)
-        super().__init__(image, name, x, y)
-
-
-# Unary gates have one input - NOT gate
-class UnaryGate(LogicGate):
-    def __init__(self, image, name, x, y):
-        LogicGate.__init__(self, image, name, x, y)
-        super().__init__(image, name, x, y)
-
-        self.input = Socket(0, 0, 20, 20, self, i, True)
-"""

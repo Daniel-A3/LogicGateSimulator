@@ -40,7 +40,7 @@ allWireSprites = pygame.sprite.Group()
 
 # WIRE CLASS
 # --------------------------------------------------------------------------------------------
-#
+# Represents the wires that connect different logic gate components together
 class Wire(pygame.sprite.Sprite):
     def __init__(self, start, end):
         pygame.sprite.Sprite.__init__(self)
@@ -55,7 +55,11 @@ class Wire(pygame.sprite.Sprite):
 
 # MOUSE CURSOR CLASS
 # --------------------------------------------------------------------------------------------
-#
+# Represents the users mouse cursor.
+# Carries out the drag and drop functionality, and updates the position of the dragged logic 
+# gate and its corresponding input,output sockets and input,output wires. This allows wires 
+# and sockets to stick to their components.
+# Also handles the creation of new wires, and prevents invalid wire connections.
 class MouseCursor(pygame.sprite.Sprite):
     carryList = []
     sourceSocketList = []
@@ -93,19 +97,39 @@ class MouseCursor(pygame.sprite.Sprite):
                 break
 
         # CREATE THE FINAL CONNECTED WIRE
-        # Creates a new instance of the final connected wire that is added to a sprite group and then drawn
-        # every game loop.
+        # Creates a new instance of the final connected wire that is added to a sprite group and then draws it every game loop.
+        # Also checks and prevents invalid wire connections.
         elif self.endSocketList != []:
 
-            self.sourceSocket.outputWire = Wire([self.sourceSocket.rect.x + 8, self.sourceSocket.rect.y + 8], [self.xPos, self.yPos])
-            self.sourceSocket.connected = True
-            allWireSprites.add(self.sourceSocket.outputWire)
+            validConnection = True
 
-            for endSocket in self.endSocketList:
-                endSocket.inputWire = self.sourceSocket.outputWire
-                endSocket.connected = True
-                # This break is necessary so that you can only create one input wire at a time.
-                break
+            # Checks if the wire is connected to the same gate.
+            if self.endSocketList[0].gate == self.sourceSocket.gate:
+                validConnection = False
+
+            # Checks if an input socket already has a wire connected. (Can't have multiple inputs)
+            elif self.endSocketList[0].connected:
+                validConnection = False
+
+            # Checks if theyre both input sockets. (Can't connect an input to an input)
+            elif self.endSocketList[0].isInput and self.sourceSocket.isInput:
+                validConnection = False
+            
+            # Checks if theyre both output sockets. (Can't connect an output to an output)
+            elif (not self.endSocketList[0].isInput) and (not self.sourceSocket.isInput):
+                validConnection = False
+            
+            elif validConnection:
+
+                self.sourceSocket.outputWire = Wire([self.sourceSocket.rect.x + 8, self.sourceSocket.rect.y + 8], [self.xPos, self.yPos])
+                self.sourceSocket.connected = True
+                allWireSprites.add(self.sourceSocket.outputWire)
+
+                for endSocket in self.endSocketList:
+                    endSocket.inputWire = self.sourceSocket.outputWire
+                    endSocket.connected = True
+                    # This break is necessary so that you can only create one input wire at a time.
+                    break
 
         # DRAG AND DROP COMPONENTS
         # If the sourceSocketList and endSocketList is empty, the user isnt trying to make a new wire, 
@@ -114,7 +138,8 @@ class MouseCursor(pygame.sprite.Sprite):
         else:
             # Drag and dropping logic gates + moves wires and sockets with its corresponding component
             for component in self.carryList:
-                # Moves the logic gate with the mouse
+
+                # Moves the logic gate component with the mouse
                 component.rect.x -= offsetX
                 component.rect.y -= offsetY
 
@@ -144,7 +169,8 @@ class MouseCursor(pygame.sprite.Sprite):
 
 # SIDEBAR MENU CLASS
 # --------------------------------------------------------------------------------------------
-#
+# Represents the sidebar menu on the left of the screen containing all the logic gate components.
+# Also responsible for instantiating new instances of components and drawing them.
 class SidebarMenu:
     dragging = False
     def __init__(self):
@@ -204,6 +230,7 @@ def main():
             # Checks if the mouse button is pressed
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 sidebar.dragging = True
+                mouse.endSocketList = []
                 # Adds all collided sprites to the carryList
                 mouse.carryList = pygame.sprite.spritecollide(mouse, sidebarSprites, False)
                 # Check if any socket sprites collide with mouse position, if true then add to sourceSocketList
@@ -236,6 +263,8 @@ def main():
         # Draws the logic gates, sockets and wires.
         sidebar.drawSprites()
 
+        # Updates the mouse objects position, as well as any dragged logic gate components and their 
+        # respective sockets and connected wires.
         mouse.update()
 
         # Update the display
@@ -271,6 +300,11 @@ self.rect.x,y values are changed.
 MANAGING CONDITIONS FOR WIRE CONNECTIVITY AND INVALID CONNECTIONS
 This will make sure that wires do not come out of a socket and connect to the same socket, 
 a socket of the same component, or a socket that already has a wire connected to it.
+Here are the four cases where a wire connection is not permitted :
 
-1. 
+1. If (endsocket.gate = startsocket.gate) : dont connect.
+2. If (endsocket.connected): dont connect
+3. If (endsocket.isInput AND startsocket.isInput) : dont connect.
+4. If ((NOT endsocket.isInput) AND (NOT startsocket.isInput)) : dont connect
+
 """
