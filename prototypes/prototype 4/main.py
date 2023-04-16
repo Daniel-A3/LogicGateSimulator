@@ -1,10 +1,10 @@
-# PROTOTYPE 3 OF THE LOGIC GATE SIMULATOR
+# PROTOTYPE 4 OF THE LOGIC GATE SIMULATOR
+# THIS PROTOTYPE ADDES SOCKETS AND WIRE CONNECTIVITY FUNCTIONALITY
 
 import pygame, os
-from MouseCursor import MouseCursor
-from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate, Socket
+from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate
 
-#General setup
+# General setup
 pygame.init()
 clock = pygame.time.Clock()
 
@@ -29,21 +29,107 @@ NAND_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("A
 NOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "NORGate.png")).convert_alpha(), (128, 64))
 XOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "XORGate.png")).convert_alpha(), (128, 64))
 
-
+# This sprite group holds all of the logic gates
 sidebarSprites = pygame.sprite.Group()
-
+# This sprite group holds all of the sockets of each logic gate
 allSocketSprites = pygame.sprite.Group()
-
+# This sprite group holds all connected wires
 allWireSprites = pygame.sprite.Group()
+
+
+# WIRE CLASS
+# --------------------------------------------------------------------------------------------
+#
+class Wire(pygame.sprite.Sprite):
+    def __init__(self, start, end):
+        pygame.sprite.Sprite.__init__(self)
+        self.start = start
+        self.end = end
+        self.color = (0, 0, 0)
+        self.width = 4
+
+    def draw(self, screen):
+        pygame.draw.line(screen, self.color, self.start, self.end, self.width)
+
+
+# MOUSE CURSOR CLASS
+# --------------------------------------------------------------------------------------------
+#
+class MouseCursor(pygame.sprite.Sprite):
+    carryList = []
+    socketList = []
+    connectedSocket = []
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+
+        #self.screen = screen
+
+        # Creates a rect object for the mouse cursor
+        self.rect = pygame.Rect(0, 0, 20, 20)
+
+
+    # Updates the position of the mouse and any object it is dragging
+    def update(self):
+        #sourceSocket = None
+        
+        # x and y position of the mouse cursor
+        self.xPos, self.yPos = pygame.mouse.get_pos()
+
+        # Finds the offset of how much the mouse was moved
+        offsetX = self.rect.x - self.xPos
+        offsetY = self.rect.y - self.yPos
+
+        # If the socketList is empty, the user isnt trying to make a new wire, so it lets them 
+        # drag the actual component.
+        if self.socketList == []:
+
+            # Drag and dropping logic gates + sockets
+            for component in self.carryList:
+                # Moves the logic gate with the mouse
+                component.rect.x -= offsetX
+                component.rect.y -= offsetY
+
+                # Moves the socket outputs with the mouse
+                component.output.rect.x -= offsetX
+                component.output.rect.y -= offsetY
+
+                # Moves the socket inputs with the mouse
+                for input in component.inputList:
+                    input.rect.x -= offsetX
+                    input.rect.y -= offsetY
+                # This break is necessary so that you can only pick up one component at a time.
+                break
+        # In this case it stops the component from moving, this lets the user drag out a wire from the socket.
+        else:
+            # Drag and dropping, and connecting new wires
+            for socket in self.socketList:
+                sourceSocket = socket
+                # Creates a wire and sets the end of the wire to the mouse position
+                sourceSocket.connectedWire = Wire([sourceSocket.rect.x + 8, sourceSocket.rect.y + 8], [self.xPos, self.yPos])
+                # This break is necessary so that you can only pick up one component at a time.
+                break
+        
+        if self.connectedSocket != []:
+            for endSocket in self.connectedSocket:
+                endSocket.connectedWire = Wire([sourceSocket.rect.x + 8, sourceSocket.rect.y + 8], [self.xPos, self.yPos])
+            
+            # Draws the wire
+            #sourceSocket.connectedWire.draw(self.screen)
+            #endSocket.connectedWire.draw(self.screen)
+
+        self.rect.x, self.rect.y = self.xPos, self.yPos
+
 
 # SIDEBAR MENU CLASS
 # --------------------------------------------------------------------------------------------
+#
 class SidebarMenu:
     def __init__(self):
         self.border = 256
 
-    # Draws new instances of the components each in their designated position in the sidebar
-    def drawSprites(self):
+    # This makes sure that the logic gates aren't needlessly instantiated every game loop
+    def instantiate(self):
         andGate = ANDGate(AND_GATE_IMAGE, "ANDGate", 0, 150)
         orGate = ORGate(OR_GATE_IMAGE, "ORGate", 128, 150)
         notGate = NOTGate(NOT_GATE_IMAGE, "NOTGate", 0, 250)
@@ -61,15 +147,23 @@ class SidebarMenu:
             for input in component.inputList:
                 allSocketSprites.add(input)
 
+    # Draws new instances of the components each in their designated position in the sidebar
+    def drawSprites(self):
         sidebarSprites.draw(SCREEN)
         allSocketSprites.draw(SCREEN)
 
+
+# MAIN FUNCTION
+# --------------------------------------------------------------------------------------------
+# This includes the main game loop which repeats every game cycle
 def main():
     run = True
     # Creates an instance of the sidebarMenu class
     sidebar = SidebarMenu()
     # Creates an instance of the MouseCursor class - represents the users mouse
-    mouse = MouseCursor(SCREEN)
+    mouse = MouseCursor()
+
+    sidebar.instantiate()
     
     # Main game loop
     while run == True:
@@ -91,8 +185,10 @@ def main():
             # Checks if the mouse button was released
             elif event.type == pygame.MOUSEBUTTONUP:
                 # Lets the user connect a wire coming out of one socket to another socket
-                mouse.connectedSocket = pygame.sprite.spritecollide(mouse, allSocketSprites, False)
-                print(mouse.connectedSocket)
+                # Checks if the user is currently dragging a wire
+                if mouse.socketList != []:
+                    mouse.connectedSocket = pygame.sprite.spritecollide(mouse, allSocketSprites, False)
+                    print("test")
                 # When you let go off clicking the mouse the carryList is emptied
                 mouse.carryList = []
                 mouse.socketList = []
@@ -105,15 +201,38 @@ def main():
         # Regenerate all components in the sidebar menu.
         # This is so that if they are drag and dropped, a new instance appears
         # in its original place.
+        if mouse.carryList != []:
+            sidebar.instantiate()
+        # Draws the logic gates
         sidebar.drawSprites()
 
         mouse.update()
 
         # Update the display
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(30)
     
     pygame.quit()
 
 if __name__ == "__main__":
     main()
+
+
+
+"""
+PLAN FOR IMPLEMENTING WIRE CONNECTIVITY:
+
+1. If dragging wire, and mouse button is released, add all collided socket sprites to a list.
+2. For the first sprite in the list, labelled endSocket, instantiate an instance of the Wire class 
+with the start and end coordinates as startSockets, endSockets rect.x,y values respectively.
+3. Add the new instance to a sprite group containing all wires.
+4. Draw all of the final connected wires once every game loop.
+
+
+MANAGING CONDITIONS FOR WIRE CONNECTIVITY AND INVALID CONNECTIONS
+This will make sure that wires do not come out of a socket and connect to the same socket, 
+a socket of the same component, or a socket that already has a wire connected to it.
+
+1. 
+
+"""

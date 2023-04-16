@@ -18,6 +18,7 @@ class Wire(pygame.sprite.Sprite):
 class MouseCursor(pygame.sprite.Sprite):
     carryList = []
     socketList = []
+    connectedSocket = []
 
     def __init__(self, screen):
         pygame.sprite.Sprite.__init__(self)
@@ -27,6 +28,8 @@ class MouseCursor(pygame.sprite.Sprite):
 
     # Updates the position of the mouse and any object it is dragging
     def update(self):
+        sourceSocket = None
+        
         # x and y position of the mouse cursor
         self.xPos, self.yPos = pygame.mouse.get_pos()
 
@@ -58,11 +61,19 @@ class MouseCursor(pygame.sprite.Sprite):
         else:
             # Drag and dropping, and connecting new wires
             for socket in self.socketList:
+                sourceSocket = socket
                 # Creates a wire and sets the end of the wire to the mouse position
-                socket.connectedWire = Wire([socket.rect.x + 8, socket.rect.y + 8], [self.xPos, self.yPos])
-                # Draws the wire
-                socket.connectedWire.draw(self.screen)
+                sourceSocket.connectedWire = Wire([sourceSocket.rect.x + 8, sourceSocket.rect.y + 8], [self.xPos, self.yPos])
                 # This break is necessary so that you can only pick up one component at a time.
                 break
+        
+        if self.connectedSocket != []:
+            for endSocket in self.connectedSocket:
+                sourceSocket = endSocket
+                sourceSocket.connectedWire = Wire([sourceSocket.rect.x + 8, sourceSocket.rect.y + 8], [self.xPos, self.yPos])
+            
+            # Draws the wire
+            sourceSocket.connectedWire.draw(self.screen)
+            #endSocket.connectedWire.draw(self.screen)
 
         self.rect.x, self.rect.y = self.xPos, self.yPos
