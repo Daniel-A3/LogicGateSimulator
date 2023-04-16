@@ -1,6 +1,7 @@
 # PROTOTYPE 5 
 # THIS PROTOTYPE IMPLEMENTS BETTER WIRE CONNECTIVITY(WIRE MOVES WHEN LOGIC GATE MOVED, STOPS INVALID CONNECTIONS),
-# ADDS THE SWITCH AND LIGHT BULB COMPONENTS, AND MOST OF ALL IMPLEMENTS THE ACTUAL LOGIC BEHING THE LOGIC GATES.
+# AND ADDS THE SWITCH AND LIGHT BULB COMPONENTS. 
+# + FIXED PERFORMANCE ISSUES AND GAMEPLAY EFFICIENCY
 
 import pygame, os
 from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate, Switch, Bulb
@@ -49,6 +50,24 @@ allSocketSprites = pygame.sprite.Group()
 # This sprite group holds all connected wires
 allWireSprites = pygame.sprite.Group()
 
+
+# INFORMATION MENU CLASS
+# --------------------------------------------------------------------------------------------
+# Represents the information menu, displays information on how to use the logic gate simulator,
+# and how each component works.
+class InformationMenu(pygame.sprite.Sprite):
+    clicked = False
+    def __init__(self, image, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+        self.name = "menu"
+    
+    # Expands the menu
+    def show():
+        pass
 
 # WIRE CLASS
 # --------------------------------------------------------------------------------------------
@@ -153,12 +172,15 @@ class MouseCursor(pygame.sprite.Sprite):
         else:
             # Drag and dropping logic gates + moves wires and sockets with its corresponding component
             for component in self.carryList:
-
+                # The information menu cannot be drag and dropped, it is a button that doesnt move.
+                if component.name == "menu":
+                    break
+                
                 # Moves the logic gate component with the mouse
                 component.rect.x -= offsetX
                 component.rect.y -= offsetY
 
-                # Switch and bulb have different socket structure
+
                 if component.name == "switch":
                     # Moves the socket outputs with the mouse
                     component.output.rect.x -= offsetX
@@ -216,8 +238,6 @@ class SidebarMenu:
     def __init__(self):
         self.border = 256
 
-    # This makes sure that the logic gates aren't needlessly instantiated every game loop,
-    # new instances are made when the user drags a component from the sidebar menu.
     def instantiate(self):
         andGate = ANDGate(AND_GATE_IMAGE, "ANDGate", 0, 180)
         orGate = ORGate(OR_GATE_IMAGE, "ORGate", 128, 180)
@@ -227,9 +247,10 @@ class SidebarMenu:
         xorGate = XORGate(XOR_GATE_IMAGE, "XORGate", 128, 380)
 
         switch = Switch(OFF_SWITCH_IMAGE, 15, 480, "switch", False)
-        bulb = Bulb(OFF_BULB_IMAGE, 143, 460, "bulb", False)
+        bulb = Bulb(OFF_BULB_IMAGE, 150, 455, "bulb", False)
 
         componentList = [andGate, orGate, notGate, nandGate, norGate, xorGate, switch, bulb]
+
         # Adds the newly instantiated components to their respective sprite groups
         for component in componentList:
             sidebarSprites.add(component)
@@ -244,6 +265,53 @@ class SidebarMenu:
                 # This is because NOT gate only requires one input socket while the others require two.
                 for input in component.inputList:
                     allSocketSprites.add(input)
+
+    # This makes sure that the logic gates aren't needlessly instantiated every game loop,
+    # new instances are made when the user drags a component from the sidebar menu.
+    def instantiateOnClick(self, component, name):
+        instantiatedObject = None
+        if name == "menu":
+            component.clicked = True
+        elif name == "ANDGate":
+            andGate = ANDGate(AND_GATE_IMAGE, "ANDGate", 0, 180)
+            instantiatedObject = andGate
+        elif name == "ORGate":
+            orGate = ORGate(OR_GATE_IMAGE, "ORGate", 128, 180)
+            instantiatedObject = orGate
+        elif name == "NOTGate":
+            notGate = NOTGate(NOT_GATE_IMAGE, "NOTGate", 0, 280)
+            instantiatedObject = notGate
+        elif name == "NANDGate":
+            nandGate = NANDGate(NAND_GATE_IMAGE, "NANDGate", 128, 280)
+            instantiatedObject = nandGate
+        elif name == "NORGate":
+            norGate = NORGate(NOR_GATE_IMAGE, "NORGate", 0, 380)
+            instantiatedObject = norGate
+        elif name == "XORGate":
+            xorGate = XORGate(XOR_GATE_IMAGE, "XORGate", 128, 380)
+            instantiatedObject = xorGate
+        elif name == "switch":
+            switch = Switch(OFF_SWITCH_IMAGE, 15, 480, "switch", False)
+            instantiatedObject = switch
+        elif name == "bulb":
+            bulb = Bulb(OFF_BULB_IMAGE, 150, 455, "bulb", False)
+            instantiatedObject = bulb
+
+        # Adds the newly instantiated component to its respective sprite groups
+        if instantiatedObject != None:
+            sidebarSprites.add(instantiatedObject)
+    
+            if instantiatedObject.name == "switch":
+                allSocketSprites.add(instantiatedObject.output)
+            elif instantiatedObject.name == "bulb":
+                allSocketSprites.add(instantiatedObject.input)
+            else:
+                allSocketSprites.add(instantiatedObject.output)
+                # Input list is required so that both NOT gate and other gates sockets can be drawn at once.
+                # This is because NOT gate only requires one input socket while the others require two.
+                for input in instantiatedObject.inputList:
+                    allSocketSprites.add(input)
+
 
     def drawSprites(self):
         # Draws all of the logic gates
@@ -266,10 +334,14 @@ def main():
     mouse = MouseCursor()
 
     sidebar.instantiate()
+
+    informationMenu = InformationMenu(INFORMATION_MENU_IMAGE, 80, 550)
+    sidebarSprites.add(informationMenu)
     
     # Main game loop
     while run:
         mouse.endSocketList = []
+        informationMenu.clicked = False
         for event in pygame.event.get():
 
             # Checks if pygame was quit
@@ -294,20 +366,26 @@ def main():
                 # When you let go off clicking the mouse the carryList is emptied
                 mouse.carryList = []
                 mouse.sourceSocketList = []
+                informationMenu.image = INFORMATION_MENU_IMAGE
 
         # Fills the screen with the colour white
         SCREEN.fill((255, 255, 255))
         # Draws the background onto the screen
         SCREEN.blit(BACKGROUND, (256,0))
-    
-        # Regenerate all components in the sidebar menu.
-        # This is so that if they are drag and dropped, a new instance appears
-        # in its original place.
-        if mouse.carryList != [] and sidebar.dragging == True:
-            sidebar.instantiate()
-            # This makes sure that only ONE instance is made of each logic gate, this minimises
-            # the performance impact.
-            sidebar.dragging = False
+
+        if mouse.carryList != [] :
+            # Changes colour of information menu when clicked and opens the menu
+            if mouse.carryList[0].name == "menu":
+                informationMenu.image = INFORMATION_MENU_HOVER_IMAGE
+                informationMenu.show()
+            # Regenerate all components in the sidebar menu.
+            # This is so that if they are drag and dropped, a new instance appears
+            # in its original place.
+            if sidebar.dragging == True:
+                sidebar.instantiateOnClick(mouse.carryList[0], mouse.carryList[0].name)
+                # This makes sure that only ONE instance is made of each logic gate, this minimises
+                # the performance impact.
+                sidebar.dragging = False
 
         SCREEN.blit(LOGO_IMAGE,(0, 0))
         # Draws the logic gates, sockets and wires.
