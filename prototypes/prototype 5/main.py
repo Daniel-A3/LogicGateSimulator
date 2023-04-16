@@ -61,20 +61,17 @@ class MouseCursor(pygame.sprite.Sprite):
     sourceSocketList = []
     endSocketList = []
 
-    sourceSocket = None
-
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
-        #self.screen = screen
+        self.sourceSocket = None
 
         # Creates a rect object for the mouse cursor
-        self.rect = pygame.Rect(0, 0, 20, 20)
+        self.rect = pygame.Rect(0, 0, 5, 5)
 
 
     # Updates the position of the mouse and any object it is dragging
     def update(self):
-        #sourceSocket = None
         
         # x and y position of the mouse cursor
         self.xPos, self.yPos = pygame.mouse.get_pos()
@@ -99,15 +96,21 @@ class MouseCursor(pygame.sprite.Sprite):
         # Creates a new instance of the final connected wire that is added to a sprite group and then drawn
         # every game loop.
         elif self.endSocketList != []:
+
+            self.sourceSocket.outputWire = Wire([self.sourceSocket.rect.x + 8, self.sourceSocket.rect.y + 8], [self.xPos, self.yPos])
+            self.sourceSocket.connected = True
+            allWireSprites.add(self.sourceSocket.outputWire)
+
             for endSocket in self.endSocketList:
-                endSocket.connectedWire = Wire([self.sourceSocket.rect.x + 8, self.sourceSocket.rect.y + 8], [self.xPos, self.yPos])
-                allWireSprites.add(endSocket.connectedWire)
-                # This break is necessary so that you can only create one wire at a time.
+                endSocket.inputWire = self.sourceSocket.outputWire
+                endSocket.connected = True
+                # This break is necessary so that you can only create one input wire at a time.
                 break
 
         # DRAG AND DROP COMPONENTS
         # If the sourceSocketList and endSocketList is empty, the user isnt trying to make a new wire, 
         # so it lets them drag the actual component.
+        # Also makes sure wires to stick to the end of sockets and move with their respective logic gate component when dragged.
         else:
             # Drag and dropping logic gates + sockets
             for component in self.carryList:
@@ -123,6 +126,17 @@ class MouseCursor(pygame.sprite.Sprite):
                 for input in component.inputList:
                     input.rect.x -= offsetX
                     input.rect.y -= offsetY
+
+                #
+                for inputSocket in component.inputList:
+                    if inputSocket.connected:
+                        inputSocket.inputWire.end[0] -= offsetX
+                        inputSocket.inputWire.end[1] -= offsetY
+                
+                if component.output.connected:
+                    component.output.outputWire.start[0] -= offsetX
+                    component.output.outputWire.start[1] -= offsetY
+                    
                 # This break is necessary so that you can only pick up one component at a time.
                 break
             
@@ -235,6 +249,25 @@ if __name__ == "__main__":
     main()
 
 
+"""
+MOVING CONNECTED WIRES WITH ITS CONNECTED COMPONONENT IF COMPONENT IS DRAGGED
+
+To implement this, we must first make sure that each logic gate object is linked to its own socket objects, and each 
+socket object is linked to its own wire objects (if connected). 
+We must be able to differentiate between wires that carry outputs and wires that carry inputs.
+If the socket is an input socket, then the connected wire is an output wire (as it is carrying the output of the previous component) 
+and vice versa.
+This will also allow the future implementation of logic as it will let the binary values(1 or 0) be transmitted through the wires
+into or out of the logic gates, inside of which logic will be performed.
+
+1. Make sure that when a connected wire is made, its respective input and output sockets have an attribute which links it to the 
+corresponding wire.
+2. When a logic gate component is dragged, the input and output sockets are checked for connected wires.
+3. Any connected wires have their self.start or self.end values changed by the same x and y offset values as the components
+self.rect.x,y values are changed. 
+4. The wires are drawn anew.
+
+"""
 """
 MANAGING CONDITIONS FOR WIRE CONNECTIVITY AND INVALID CONNECTIONS
 This will make sure that wires do not come out of a socket and connect to the same socket, 

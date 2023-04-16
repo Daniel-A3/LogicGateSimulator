@@ -19,15 +19,10 @@ class Socket(pygame.sprite.Sprite):
 
         self.gate = gate
         self.isInput = isInput
+        self.connected = False
 
-        self.isConnected = False
-        self.connectedWire = None
-
-    def connect_wire(self, wire):
-        # connect wire to the socket
-        self.isConnected = True
-        self.connectedWire = wire
-        self.color = (255, 0, 0)
+        self.inputWire = None
+        self.outputWire = None
 
 # Superclass for all logic gates
 class LogicGate(pygame.sprite.Sprite):
