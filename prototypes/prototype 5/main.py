@@ -21,14 +21,26 @@ SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 # Loads the background
 BACKGROUND = pygame.image.load(os.path.join("Assets", "backgroundGrid.png"))
 
-# Loads each logic gate image, then uses a smoothscale algorithm to transform its size
+# Loads each components image, then uses a smoothscale algorithm to transform its size
 # This is so that all of the images are the same and right size, while also retaining its image quality.
+# .convert_alpha is used for performance reasons.
 AND_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "ANDGate.png")).convert_alpha(), (128, 64))
 OR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "ORGate.png")).convert_alpha(), (128, 64))
 NOT_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "NOTGate.png")).convert_alpha(), (128, 64))
 NAND_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "NANDGate.png")).convert_alpha(), (128, 64))
 NOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "NORGate.png")).convert_alpha(), (128, 64))
 XOR_GATE_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "XORGate.png")).convert_alpha(), (128, 64))
+
+ON_SWITCH_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "onSwitch.png")).convert_alpha(), (90, 45))
+OFF_SWITCH_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "offSwitch.png")).convert_alpha(), (90, 45))
+
+ON_BULB_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "onBulb.png")).convert_alpha(), (90, 90))
+OFF_BULB_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "offBulb.png")).convert_alpha(), (90, 90))
+
+INFORMATION_MENU_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "informationMenu.png")).convert_alpha(), (90,90))
+INFORMATION_MENU_HOVER_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "informationMenuOnHover.png")).convert_alpha(), (90,90))
+
+LOGO_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "logo.png")).convert_alpha(), (260, 150))
 
 # This sprite group holds all of the logic gates
 sidebarSprites = pygame.sprite.Group()
@@ -179,12 +191,12 @@ class SidebarMenu:
     # This makes sure that the logic gates aren't needlessly instantiated every game loop,
     # new instances are made when the user drags a component from the sidebar menu.
     def instantiate(self):
-        andGate = ANDGate(AND_GATE_IMAGE, "ANDGate", 0, 150)
-        orGate = ORGate(OR_GATE_IMAGE, "ORGate", 128, 150)
-        notGate = NOTGate(NOT_GATE_IMAGE, "NOTGate", 0, 250)
-        nandGate = NANDGate(NAND_GATE_IMAGE, "NANDGate", 128, 250)
-        norGate = NORGate(NOR_GATE_IMAGE, "NORGate", 0, 350)
-        xorGate = XORGate(XOR_GATE_IMAGE, "XORGate", 128, 350)
+        andGate = ANDGate(AND_GATE_IMAGE, "ANDGate", 0, 180)
+        orGate = ORGate(OR_GATE_IMAGE, "ORGate", 128, 180)
+        notGate = NOTGate(NOT_GATE_IMAGE, "NOTGate", 0, 280)
+        nandGate = NANDGate(NAND_GATE_IMAGE, "NANDGate", 128, 280)
+        norGate = NORGate(NOR_GATE_IMAGE, "NORGate", 0, 380)
+        xorGate = XORGate(XOR_GATE_IMAGE, "XORGate", 128, 380)
 
         componentList = [andGate, orGate, notGate, nandGate, norGate, xorGate]
         # Adds the newly instantiated components to their respective sprite groups
@@ -266,6 +278,15 @@ def main():
         # Updates the mouse objects position, as well as any dragged logic gate components and their 
         # respective sockets and connected wires.
         mouse.update()
+
+        SCREEN.blit(ON_SWITCH_IMAGE,(500, 100))
+        SCREEN.blit(OFF_SWITCH_IMAGE,(500, 150))
+        SCREEN.blit(ON_BULB_IMAGE,(500, 200))
+        SCREEN.blit(OFF_BULB_IMAGE,(500, 300))
+        SCREEN.blit(INFORMATION_MENU_IMAGE,(500, 400))
+        SCREEN.blit(INFORMATION_MENU_HOVER_IMAGE,(500, 500))
+
+        SCREEN.blit(LOGO_IMAGE,(0, 0))
 
         # Update the display
         pygame.display.flip()
