@@ -112,7 +112,7 @@ class MouseCursor(pygame.sprite.Sprite):
         # so it lets them drag the actual component.
         # Also makes sure wires to stick to the end of sockets and move with their respective logic gate component when dragged.
         else:
-            # Drag and dropping logic gates + sockets
+            # Drag and dropping logic gates + moves wires and sockets with its corresponding component
             for component in self.carryList:
                 # Moves the logic gate with the mouse
                 component.rect.x -= offsetX
@@ -121,7 +121,6 @@ class MouseCursor(pygame.sprite.Sprite):
                 # Moves the socket outputs with the mouse
                 component.output.rect.x -= offsetX
                 component.output.rect.y -= offsetY
-
                 # Moves the socket inputs with the mouse
                 for input in component.inputList:
                     input.rect.x -= offsetX
