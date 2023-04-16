@@ -1,5 +1,6 @@
-# PROTOTYPE 4 OF THE LOGIC GATE SIMULATOR
-# THIS PROTOTYPE ADDS SOCKETS AND WIRE CONNECTIVITY FUNCTIONALITY
+# PROTOTYPE 5 
+# THIS PROTOTYPE IMPLEMENTS BETTER WIRE CONNECTIVITY(WIRE MOVES WHEN LOGIC GATE MOVED, STOPS INVALID CONNECTIONS),
+# ADDS THE SWITCH AND LIGHT BULB COMPONENTS, AND MOST OF ALL IMPLEMENTS THE ACTUAL LOGIC BEHING THE LOGIC GATES.
 
 import pygame, os
 from LogicGates import ANDGate, ORGate, NOTGate, NANDGate, NORGate, XORGate
@@ -235,11 +236,9 @@ if __name__ == "__main__":
 
 
 """
-PLAN FOR IMPLEMENTING WIRE CONNECTIVITY:
+MANAGING CONDITIONS FOR WIRE CONNECTIVITY AND INVALID CONNECTIONS
+This will make sure that wires do not come out of a socket and connect to the same socket, 
+a socket of the same component, or a socket that already has a wire connected to it.
 
-1. If dragging wire, and mouse button is released, add all collided socket sprites to a list.
-2. For the first sprite in the list, labelled endSocket, instantiate an instance of the Wire class 
-with the start and end coordinates as startSockets, endSockets rect.x,y values respectively.
-3. Add the new instance to a sprite group containing all wires.
-4. Draw all of the final connected wires once every game loop.
+1. 
 """
