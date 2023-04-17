@@ -44,8 +44,10 @@ INFORMATION_MENU_HOVER_IMAGE = pygame.transform.smoothscale(pygame.image.load(os
 
 LOGO_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "logo.png")).convert_alpha(), (260, 150))
 
-# This sprite group holds all of the logic gates
+# This sprite group holds all of the components
 sidebarSprites = pygame.sprite.Group()
+# This sprite group holds all of the logic gates
+allLogicGateSprites = pygame.sprite.Group()
 # This sprite group holds all of the sockets of each logic gate
 allSocketSprites = pygame.sprite.Group()
 # This sprite group holds all connected wires
@@ -80,6 +82,9 @@ class Wire(pygame.sprite.Sprite):
         self.end = end
         self.color = (0, 0, 0)
         self.width = 4
+
+        self.startSocket = None
+        self.endSocket = None
 
     def draw(self, screen):
         pygame.draw.line(screen, self.color, self.start, self.end, self.width)
@@ -153,19 +158,20 @@ class MouseCursor(pygame.sprite.Sprite):
                 validConnection = False
             
             elif validConnection:
-
+                # Creates a new instance of the wire class
                 wire = Wire([self.sourceSocket.rect.x + 8, self.sourceSocket.rect.y + 8], [self.xPos, self.yPos])
                 self.sourceSocket.outputWires.append(wire)
                 self.sourceSocket.connected = True
 
+                # These two lines link the wires to their respective start and end sockets.
+                wire.startSocket = self.sourceSocket
+                wire.endSocket = self.endSocketList[0]
+        
                 for wire in self.sourceSocket.outputWires:
                     allWireSprites.add(wire)
 
                 for endSocket in self.endSocketList:
-                    if self.sourceSocket.current == True:
-                        endSocket.current = True
-                    else:
-                        endSocket.current = False
+                    # This is necesary as an output socket can have multiple wires
                     endSocket.inputWire = self.sourceSocket.outputWires[-1]
                     endSocket.connected = True
                     # This break is necessary so that you can only create one input wire at a time.
@@ -267,6 +273,7 @@ class SidebarMenu:
             elif component.name == "bulb":
                 allSocketSprites.add(component.input)
             else:
+                allLogicGateSprites.add(component)
                 allSocketSprites.add(component.output)
                 # Input list is required so that both NOT gate and other gates sockets can be drawn at once.
                 # This is because NOT gate only requires one input socket while the others require two.
@@ -334,6 +341,21 @@ class SidebarMenu:
                 component.update(ON_SWITCH_IMAGE, OFF_SWITCH_IMAGE)
             elif component.name == "bulb":
                 component.update(ON_BULB_IMAGE, OFF_BULB_IMAGE)
+
+
+# TRANSMIT CURRENT FUNCTION
+# --------------------------------------------------------------------------------------------
+# Transmits current through the wires, sockets and components.
+def transmitCurrent():
+    for wire in allWireSprites:
+        if wire.startSocket.current:
+            wire.endSocket.current = True
+            wire.color = (255, 0, 0)
+        else:
+            wire.endSocket.current = False
+            wire.color = (0,0,0)
+    for component in allLogicGateSprites:
+        component.performLogic()
 
 
 # MAIN FUNCTION
@@ -408,7 +430,9 @@ def main():
                 # This makes sure that only ONE instance is made of each logic gate, this minimises
                 # the performance impact.
                 sidebar.clicked = False
-        
+
+        # Transmits current through the wires
+        transmitCurrent()
 
         SCREEN.blit(LOGO_IMAGE,(0, 0))
 
@@ -459,4 +483,11 @@ Here are the four cases where a wire connection is not permitted :
 3. If (endsocket.isInput AND startsocket.isInput) : dont connect.
 4. If ((NOT endsocket.isInput) AND (NOT startsocket.isInput)) : dont connect
 
+"""
+
+"""
+if self.sourceSocket.current == True:
+                        endSocket.current = True
+                    else:
+                        endSocket.current = False
 """

@@ -59,27 +59,63 @@ class LogicGate(pygame.sprite.Sprite):
 
 class ANDGate(LogicGate):
     def __init__(self, image, name, x, y):
-        super().__init__(image, name, x, y)      
+        super().__init__(image, name, x, y) 
+
+    def performLogic(self):
+        if self.inputA.current and self.inputB.current:
+            self.output.current = True
+        else:
+            self.output.current = False  
 
 class ORGate(LogicGate):
     def __init__(self, image, name, x, y):
         super().__init__(image, name, x, y)
+    
+    def performLogic(self):
+        if self.inputA.current or self.inputB.current:
+            self.output.current = True
+        else:
+            self.output.current = False  
         
 class NOTGate(LogicGate):
     def __init__(self, image, name, x, y):
-        super().__init__(image, name, x, y)     
+        super().__init__(image, name, x, y)  
+
+    def performLogic(self):
+        if self.input.current:
+            self.output.current = False
+        else:
+            self.output.current = True  
 
 class NANDGate(LogicGate):
     def __init__(self, image, name, x, y):
         super().__init__(image, name, x, y)
+    
+    def performLogic(self):
+        if not (self.inputA.current and self.inputB.current):
+            self.output.current = True
+        else:
+            self.output.current = False  
         
 class NORGate(LogicGate):
     def __init__(self, image, name, x, y):
         super().__init__(image, name, x, y)
+    
+    def performLogic(self):
+        if not self.inputA.current and not self.inputB.current:
+            self.output.current = True
+        else:
+            self.output.current = False  
         
 class XORGate(LogicGate):
     def __init__(self, image, name, x, y):
         super().__init__(image, name, x, y)
+    
+    def performLogic(self):
+        if (self.inputA.current or self.inputB.current) and (not self.inputA.current or not self.inputB.current):
+            self.output.current = True
+        else:
+            self.output.current = False  
 
 
 # SWITCH CLASS
@@ -106,6 +142,7 @@ class Switch(pygame.sprite.Sprite):
             self.output.current = True
         else:
             self.image = offImage
+            self.output.current = False
 
 # LIGHT BULB CLASS
 # --------------------------------------------------------------------------------------------
