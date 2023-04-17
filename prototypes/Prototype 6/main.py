@@ -67,7 +67,7 @@ class InformationMenu(pygame.sprite.Sprite):
         self.name = "menu"
     
     # Expands the menu
-    def show():
+    def show(self):
         pass
 
 # WIRE CLASS
@@ -104,7 +104,8 @@ class MouseCursor(pygame.sprite.Sprite):
 
         # Creates a rect object for the mouse cursor
         self.rect = pygame.Rect(0, 0, 5, 5)
-
+        self.offsetX = 0
+        self.offsetY = 0
 
     # Updates the position of the mouse and any object it is dragging
     def update(self):
@@ -113,8 +114,8 @@ class MouseCursor(pygame.sprite.Sprite):
         self.xPos, self.yPos = pygame.mouse.get_pos()
 
         # Finds the offset of how much the mouse was moved
-        offsetX = self.rect.x - self.xPos
-        offsetY = self.rect.y - self.yPos
+        self.offsetX = self.rect.x - self.xPos
+        self.offsetY = self.rect.y - self.yPos
 
         # DRAG WIRE FROM SOURCE SOCKET
         # In this case it stops the component from moving, this lets the user drag out a wire from the socket.
@@ -161,6 +162,10 @@ class MouseCursor(pygame.sprite.Sprite):
                     allWireSprites.add(wire)
 
                 for endSocket in self.endSocketList:
+                    if self.sourceSocket.current == True:
+                        endSocket.current = True
+                    else:
+                        endSocket.current = False
                     endSocket.inputWire = self.sourceSocket.outputWires[-1]
                     endSocket.connected = True
                     # This break is necessary so that you can only create one input wire at a time.
@@ -178,50 +183,50 @@ class MouseCursor(pygame.sprite.Sprite):
                     break
                 
                 # Moves the logic gate component with the mouse
-                component.rect.x -= offsetX
-                component.rect.y -= offsetY
+                component.rect.x -= self.offsetX
+                component.rect.y -= self.offsetY
 
 
                 if component.name == "switch":
                     # Moves the socket outputs with the mouse
-                    component.output.rect.x -= offsetX
-                    component.output.rect.y -= offsetY
+                    component.output.rect.x -= self.offsetX
+                    component.output.rect.y -= self.offsetY
 
                     # Moves any wires connected to the components output socket with the component when dragged.
                     if component.output.connected:
                         for wire in component.output.outputWires:
-                            wire.start[0] -= offsetX
-                            wire.start[1] -= offsetY
+                            wire.start[0] -= self.offsetX
+                            wire.start[1] -= self.offsetY
 
                 elif component.name == "bulb":
                     # Moves the socket inputs with the mouse
-                    component.input.rect.x -= offsetX
-                    component.input.rect.y -= offsetY
+                    component.input.rect.x -= self.offsetX
+                    component.input.rect.y -= self.offsetY
 
                     # Moves any wires connected to the components input sockets with the component when dragged.
                     if component.input.connected:
-                        component.input.inputWire.end[0] -= offsetX
-                        component.input.inputWire.end[1] -= offsetY
+                        component.input.inputWire.end[0] -= self.offsetX
+                        component.input.inputWire.end[1] -= self.offsetY
 
                 else:
                     # Moves the socket outputs with the mouse
-                    component.output.rect.x -= offsetX
-                    component.output.rect.y -= offsetY
+                    component.output.rect.x -= self.offsetX
+                    component.output.rect.y -= self.offsetY
                     # Moves the socket inputs with the mouse
                     for input in component.inputList:
-                        input.rect.x -= offsetX
-                        input.rect.y -= offsetY
+                        input.rect.x -= self.offsetX
+                        input.rect.y -= self.offsetY
 
                     # Moves any wires connected to the components input sockets with the component when dragged.
                     for inputSocket in component.inputList:
                         if inputSocket.connected:
-                            inputSocket.inputWire.end[0] -= offsetX
-                            inputSocket.inputWire.end[1] -= offsetY
+                            inputSocket.inputWire.end[0] -= self.offsetX
+                            inputSocket.inputWire.end[1] -= self.offsetY
                     # Moves any wires connected to the components output socket with the component when dragged.
                     if component.output.connected:
                         for wire in component.output.outputWires:
-                            wire.start[0] -= offsetX
-                            wire.start[1] -= offsetY
+                            wire.start[0] -= self.offsetX
+                            wire.start[1] -= self.offsetY
                     
                     
                 # This break is necessary so that you can only pick up one component at a time.
@@ -235,6 +240,7 @@ class MouseCursor(pygame.sprite.Sprite):
 # Represents the sidebar menu on the left of the screen containing all the logic gate components.
 # Also responsible for instantiating new instances of components and drawing them.
 class SidebarMenu:
+    clicked = False
     dragging = False
     def __init__(self):
         self.border = 256
@@ -247,8 +253,8 @@ class SidebarMenu:
         norGate = NORGate(NOR_GATE_IMAGE, "NORGate", 0, 380)
         xorGate = XORGate(XOR_GATE_IMAGE, "XORGate", 128, 380)
 
-        switch = Switch(OFF_SWITCH_IMAGE, 15, 480, "switch", False)
-        bulb = Bulb(OFF_BULB_IMAGE, 150, 455, "bulb", False)
+        switch = Switch(OFF_SWITCH_IMAGE, 15, 480, "switch")
+        bulb = Bulb(OFF_BULB_IMAGE, 150, 455, "bulb")
 
         componentList = [andGate, orGate, notGate, nandGate, norGate, xorGate, switch, bulb]
 
@@ -292,10 +298,10 @@ class SidebarMenu:
             xorGate = XORGate(XOR_GATE_IMAGE, "XORGate", 128, 380)
             instantiatedObject = xorGate
         elif name == "switch":
-            switch = Switch(OFF_SWITCH_IMAGE, 15, 480, "switch", False)
+            switch = Switch(OFF_SWITCH_IMAGE, 15, 480, "switch")
             instantiatedObject = switch
         elif name == "bulb":
-            bulb = Bulb(OFF_BULB_IMAGE, 150, 455, "bulb", False)
+            bulb = Bulb(OFF_BULB_IMAGE, 150, 455, "bulb")
             instantiatedObject = bulb
 
         # Adds the newly instantiated component to its respective sprite groups
@@ -323,7 +329,7 @@ class SidebarMenu:
         for wire in allWireSprites:
             wire.draw(SCREEN)
 
-        for component in allSocketSprites:
+        for component in sidebarSprites:
             if component.name == "switch":
                 component.update(ON_SWITCH_IMAGE, OFF_SWITCH_IMAGE)
             elif component.name == "bulb":
@@ -357,19 +363,32 @@ def main():
 
             # Checks if the mouse button is pressed
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                sidebar.clicked = True
                 sidebar.dragging = True
                 mouse.endSocketList = []
                 # Adds all collided sprites to the carryList
                 mouse.carryList = pygame.sprite.spritecollide(mouse, sidebarSprites, False)
                 # Check if any socket sprites collide with mouse position, if true then add to sourceSocketList
                 mouse.sourceSocketList = pygame.sprite.spritecollide(mouse, allSocketSprites, False)
-    
+
+                if mouse.carryList != []:
+                    # Switch is turned on when clicked
+                    if mouse.carryList[0].name == "switch":
+                        mouse.carryList[0].switchedOn = not mouse.carryList[0].switchedOn
+                    # Changes colour of information menu when clicked and opens the menu
+                    elif mouse.carryList[0].name == "menu":
+                        informationMenu.image = INFORMATION_MENU_HOVER_IMAGE
+                        informationMenu.show()
+                
             # Checks if the mouse button was released
             elif event.type == pygame.MOUSEBUTTONUP:
                 # Lets the user connect a wire coming out of one socket to another socket
                 # Checks if the user is currently dragging a wire
                 if mouse.sourceSocketList != []:
                     mouse.endSocketList = pygame.sprite.spritecollide(mouse, allSocketSprites, False)
+
+                sidebar.dragging = False
+
                 # When you let go off clicking the mouse the carryList is emptied
                 mouse.carryList = []
                 mouse.sourceSocketList = []
@@ -381,20 +400,15 @@ def main():
         SCREEN.blit(BACKGROUND, (256,0))
 
         if mouse.carryList != [] :
-            # Changes colour of information menu when clicked and opens the menu
-            if mouse.carryList[0].name == "menu":
-                informationMenu.image = INFORMATION_MENU_HOVER_IMAGE
-                informationMenu.show()
             # Regenerate all components in the sidebar menu.
             # This is so that if they are drag and dropped, a new instance appears
             # in its original place.
-            if sidebar.dragging == True:
+            if sidebar.clicked == True:
                 sidebar.instantiateOnClick(mouse.carryList[0], mouse.carryList[0].name)
                 # This makes sure that only ONE instance is made of each logic gate, this minimises
                 # the performance impact.
-                sidebar.dragging = False
-            elif mouse.carryList[0].name == "switch":
-                mouse.carryList[0].switchedOn = True
+                sidebar.clicked = False
+        
 
         SCREEN.blit(LOGO_IMAGE,(0, 0))
 

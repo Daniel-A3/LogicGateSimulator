@@ -13,7 +13,7 @@ pygame.init()
 # Each logic gate has input socket/s, and an output socket, each can be connected to a wire
 # object of the Wire Class.
 class Socket(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height, gate, isInput, current):
+    def __init__(self, x, y, width, height, gate, isInput):
         super().__init__()
         self.image = pygame.Surface([width, height])
 
@@ -94,7 +94,8 @@ class Switch(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.name = name
-        
+        self.clicked = False
+
         self.switchedOn = False
 
         self.output = Socket((x + 84), (y + 15), 15, 15, self, False)
@@ -102,6 +103,7 @@ class Switch(pygame.sprite.Sprite):
     def update(self, onImage, offImage):
         if self.switchedOn == True:
             self.image = onImage
+            self.output.current = True
         else:
             self.image = offImage
 
@@ -109,14 +111,13 @@ class Switch(pygame.sprite.Sprite):
 # --------------------------------------------------------------------------------------------
 # Represents the wires that connect different logic gate components together
 class Bulb(pygame.sprite.Sprite):
-    def __init__(self, image, x, y, name, current):
+    def __init__(self, image, x, y, name):
         pygame.sprite.Sprite.__init__(self)
         self.image = image
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
         self.name = name
-        self.current = current
 
         self.input = Socket((x + 31), (y + 56), 15, 15, self, True)
     
