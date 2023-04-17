@@ -45,12 +45,11 @@ LOGO_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets
 
 # This sprite group holds all of the components
 sidebarSprites = pygame.sprite.Group()
-# This sprite group holds all of the logic gates
-allLogicGateSprites = pygame.sprite.Group()
 # This sprite group holds all of the sockets of each logic gate
 allSocketSprites = pygame.sprite.Group()
 # This sprite group holds all connected wires
 allWireSprites = pygame.sprite.Group()
+# This list holds all the logic gates
 allLogicGatesList = []
 
 
@@ -157,25 +156,25 @@ class MouseCursor(pygame.sprite.Sprite):
             elif (not self.endSocketList[0].isInput) and (not self.sourceSocket.isInput):
                 validConnection = False
             
+            # Instantiates the wire and connects it to its respective socket
             elif validConnection:
                 # Creates a new instance of the wire class
                 wire = Wire([self.sourceSocket.rect.x + 8, self.sourceSocket.rect.y + 8], [self.xPos, self.yPos])
                 self.sourceSocket.outputWires.append(wire)
                 self.sourceSocket.connected = True
 
-                # These two lines link the wires to their respective start and end sockets.
-                wire.startSocket = self.sourceSocket
-                wire.endSocket = self.endSocketList[0]
-        
-                for wire in self.sourceSocket.outputWires:
-                    allWireSprites.add(wire)
-
                 for endSocket in self.endSocketList:
+                    # These two lines link the wires to their respective start and end sockets.
+                    wire.startSocket = self.sourceSocket
+                    wire.endSocket = endSocket
                     # This is necesary as an output socket can have multiple wires
-                    endSocket.inputWire = self.sourceSocket.outputWires[-1]
+                    endSocket.inputWire = self.sourceSocket.outputWires[0]
                     endSocket.connected = True
                     # This break is necessary so that you can only create one input wire at a time.
                     break
+        
+                for wire in self.sourceSocket.outputWires:
+                    allWireSprites.add(wire)
 
         # DRAG AND DROP COMPONENTS
         # If the sourceSocketList and endSocketList is empty, the user isnt trying to make a new wire, 
@@ -273,7 +272,7 @@ class SidebarMenu:
             elif component.name == "bulb":
                 allSocketSprites.add(component.input)
             else:
-                allLogicGateSprites.add(component)
+                allLogicGatesList.append(component)
                 allSocketSprites.add(component.output)
                 # Input list is required so that both NOT gate and other gates sockets can be drawn at once.
                 # This is because NOT gate only requires one input socket while the others require two.
@@ -321,7 +320,6 @@ class SidebarMenu:
                 allSocketSprites.add(instantiatedObject.input)
             else:
                 allLogicGatesList.append(instantiatedObject)
-                print(allLogicGatesList)
 
                 allSocketSprites.add(instantiatedObject.output)
                 # Input list is required so that both NOT gate and other gates sockets can be drawn at once.
@@ -345,7 +343,7 @@ class SidebarMenu:
             elif component.name == "bulb":
                 component.update(ON_BULB_IMAGE, OFF_BULB_IMAGE)
 
-
+"""
 # TRANSMIT CURRENT FUNCTION
 # --------------------------------------------------------------------------------------------
 # Transmits current through the wires, sockets and components.
@@ -360,7 +358,7 @@ def transmitCurrent():
 
     for component in allLogicGatesList:
         component.performLogic()
-
+"""
 
 # MAIN FUNCTION
 # --------------------------------------------------------------------------------------------
@@ -374,7 +372,7 @@ def main():
 
     sidebar.instantiate()
 
-    informationMenu = InformationMenu(INFORMATION_MENU_IMAGE, 80, 550)
+    informationMenu = InformationMenu(INFORMATION_MENU_IMAGE, 15, 550)
     sidebarSprites.add(informationMenu)
     
     # Main game loop
@@ -435,17 +433,28 @@ def main():
                 # the performance impact.
                 sidebar.clicked = False
 
-        # Transmits current through the wires
-        transmitCurrent()
-
         SCREEN.blit(LOGO_IMAGE,(0, 0))
-
+    
         # Draws the logic gates, sockets and wires.
         sidebar.drawSprites()
 
         # Updates the mouse objects position, as well as any dragged logic gate components and their 
         # respective sockets and connected wires.
         mouse.update()
+
+        for wire in allWireSprites:
+            if wire.startSocket.current:
+                wire.endSocket.current = True
+                wire.color = (255, 0, 0)
+            else:
+                wire.endSocket.current = False
+                wire.color = (0,0,0)
+
+        for component in allLogicGatesList:
+            component.performLogic()
+
+        # Transmits current through the wires
+        #transmitCurrent()
 
         # Update the display
         pygame.display.flip()
