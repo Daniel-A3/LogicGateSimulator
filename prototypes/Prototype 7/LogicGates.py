@@ -17,7 +17,6 @@ class Socket(pygame.sprite.Sprite):
         super().__init__()
         self.image = pygame.Surface([width, height])
 
-        # FOR TESTING PURPOSES
         self.image.fill([153, 204, 255])
 
         self.rect = self.image.get_rect()

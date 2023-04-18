@@ -1,5 +1,5 @@
 # PROTOTYPE 7
-# THIS PROTOTYPE IMPLEMENTS THE BIN, INFORMATION MENU AND MENU SCREEN.
+# THIS PROTOTYPE IMPLEMENTS THE BIN AND INFORMATION MENU.
 # THE BIN LETS THE USER DELETE LOGIC GATES AND CONNECTED WIRES.
 # THE INFORMATION MENU TELLS THE USER HOW TO USE THE PROGRAM AND HAS EDUCATIONAL INFORMATION ON EACH LOGIC GATE.
 
@@ -40,6 +40,9 @@ OFF_BULB_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("As
 
 INFORMATION_MENU_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "informationMenu.png")).convert_alpha(), (90,90))
 INFORMATION_MENU_HOVER_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "informationMenuOnHover.png")).convert_alpha(), (90,90))
+INFORMATION_MENU_SCREEN = pygame.image.load(os.path.join("Assets", "informationMenuScreen.png")).convert_alpha()#1066,642
+
+BIN_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "bin.png")).convert_alpha(), (50, 65))
 
 LOGO_IMAGE = pygame.transform.smoothscale(pygame.image.load(os.path.join("Assets", "logo.png")).convert_alpha(), (260, 150))
 
@@ -51,13 +54,14 @@ allSocketSprites = pygame.sprite.Group()
 allWireSprites = pygame.sprite.Group()
 # This list holds all the logic gates
 allLogicGatesList = []
+# All draggable sprites (all components), does not include bin or information menu
+allComponentSprites = pygame.sprite.Group()
 
 
-# INFORMATION MENU CLASS
+# BIN CLASS
 # --------------------------------------------------------------------------------------------
-# Represents the information menu, displays information on how to use the logic gate simulator,
-# and how each component works.
-class InformationMenu(pygame.sprite.Sprite):
+# Represents the rubbish bin, lets you delete components and their connected wires.
+class Bin(pygame.sprite.Sprite):
     clicked = False
     def __init__(self, image, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -65,11 +69,24 @@ class InformationMenu(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
+        self.name = "bin"
+
+# INFORMATION MENU CLASS
+# --------------------------------------------------------------------------------------------
+# Represents the information menu, displays information on how to use the logic gate simulator,
+# and how each component works.
+class InformationMenu(pygame.sprite.Sprite):
+    clicked = False
+    show = False
+    def __init__(self, image, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
         self.name = "menu"
-    
-    # Expands the menu
-    def show(self):
-        pass
+        # 1332 x 0.8 = 1066, 802 x 0.8 = 642
+        # ^^^ Resolution of information menu screen
 
 # WIRE CLASS
 # --------------------------------------------------------------------------------------------
@@ -126,6 +143,12 @@ class MouseCursor(pygame.sprite.Sprite):
         if self.sourceSocketList != []:
             # Drag and dropping, and connecting new wires
             for socket in self.sourceSocketList:
+
+                # Prevents user from connecting an input socket to an output socket, as they must drag the wire from the
+                # output socket and connect it to the input.
+                if socket.isInput:
+                    break
+
                 self.sourceSocket = socket
                 # Creates a wire and sets the end of the wire to the mouse position
                 socket.connectedWire = Wire([socket.rect.x + 8, socket.rect.y + 8], [self.xPos, self.yPos])
@@ -185,6 +208,8 @@ class MouseCursor(pygame.sprite.Sprite):
             for component in self.carryList:
                 # The information menu cannot be drag and dropped, it is a button that doesnt move.
                 if component.name == "menu":
+                    break
+                elif component.name =="bin":
                     break
                 
                 # Moves the logic gate component with the mouse
@@ -266,6 +291,7 @@ class SidebarMenu:
         # Adds the newly instantiated components to their respective sprite groups
         for component in componentList:
             sidebarSprites.add(component)
+            allComponentSprites.add(component)
     
             if component.name == "switch":
                 allSocketSprites.add(component.output)
@@ -313,6 +339,7 @@ class SidebarMenu:
         # Adds the newly instantiated component to its respective sprite groups
         if instantiatedObject != None:
             sidebarSprites.add(instantiatedObject)
+            allComponentSprites.add(instantiatedObject)
     
             if instantiatedObject.name == "switch":
                 allSocketSprites.add(instantiatedObject.output)
@@ -343,22 +370,6 @@ class SidebarMenu:
             elif component.name == "bulb":
                 component.update(ON_BULB_IMAGE, OFF_BULB_IMAGE)
 
-"""
-# TRANSMIT CURRENT FUNCTION
-# --------------------------------------------------------------------------------------------
-# Transmits current through the wires, sockets and components.
-def transmitCurrent():
-    for wire in allWireSprites:
-        if wire.startSocket.current:
-            wire.endSocket.current = True
-            wire.color = (255, 0, 0)
-        else:
-            wire.endSocket.current = False
-            wire.color = (0,0,0)
-
-    for component in allLogicGatesList:
-        component.performLogic()
-"""
 
 # MAIN FUNCTION
 # --------------------------------------------------------------------------------------------
@@ -374,11 +385,14 @@ def main():
 
     informationMenu = InformationMenu(INFORMATION_MENU_IMAGE, 15, 550)
     sidebarSprites.add(informationMenu)
+    bin = Bin(BIN_IMAGE, 162, 561)
+    sidebarSprites.add(bin)
     
     # Main game loop
     while run:
         mouse.endSocketList = []
         informationMenu.clicked = False
+        deleteList = []
         for event in pygame.event.get():
 
             # Checks if pygame was quit
@@ -402,7 +416,7 @@ def main():
                     # Changes colour of information menu when clicked and opens the menu
                     elif mouse.carryList[0].name == "menu":
                         informationMenu.image = INFORMATION_MENU_HOVER_IMAGE
-                        informationMenu.show()
+                        informationMenu.show = not informationMenu.show
                 
             # Checks if the mouse button was released
             elif event.type == pygame.MOUSEBUTTONUP:
@@ -442,6 +456,8 @@ def main():
         # respective sockets and connected wires.
         mouse.update()
 
+        # TRANSMITS CURRENT 
+        # Carries current from source socket to end socket through wires.
         for wire in allWireSprites:
             if wire.startSocket.current:
                 wire.endSocket.current = True
@@ -453,8 +469,51 @@ def main():
         for component in allLogicGatesList:
             component.performLogic()
 
-        # Transmits current through the wires
-        #transmitCurrent()
+        # DELETE COMPONENTS WITH BIN
+        # Checks collision with bin and any draggable component.
+        deleteList = pygame.sprite.spritecollide(bin, allComponentSprites, False)
+        if deleteList != []:
+            componentToDelete = deleteList[0]
+            # Deletes the connected wires first, then the sockets, then finally the component.
+            if componentToDelete.name == "switch":
+                # Deletes any connected wires
+                for outputWiresToDelete in componentToDelete.output.outputWires:
+                    outputWiresToDelete.kill()
+                # Deletes all sockets
+                componentToDelete.output.kill()
+
+            elif componentToDelete.name == "bulb":
+                # Deletes any connected wires
+                if componentToDelete.input.inputWire != None:
+                    componentToDelete.input.inputWire.kill()
+                # Deletes all sockets
+                componentToDelete.input.kill()
+            
+            elif componentToDelete == "NOTGate":
+                # Deletes any connected wires
+                if componentToDelete.input.inputWire != None:
+                    componentToDelete.input.inputWire.kill()
+                for outputWiresToDelete in componentToDelete.output.outputWires:
+                    outputWiresToDelete.kill()
+                # Deletes all sockets
+                componentToDelete.input.kill()
+                componentToDelete.output.kill()
+            else:
+                # Deletes any connected wires
+                if componentToDelete.inputA.inputWire != None:
+                    componentToDelete.inputA.inputWire.kill()
+                    componentToDelete.inputB.inputWire.kill()
+                for outputWiresToDelete in componentToDelete.output.outputWires:
+                    outputWiresToDelete.kill()
+                # Deletes all sockets
+                componentToDelete.inputA.kill()
+                componentToDelete.inputB.kill()
+                componentToDelete.output.kill()
+            # Deletes the actual component
+            componentToDelete.kill()
+
+        if informationMenu.show:
+            SCREEN.blit(INFORMATION_MENU_SCREEN, (150,80))
 
         # Update the display
         pygame.display.flip()
